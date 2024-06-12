@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.htthinhus.gpstracker.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_interactiveMapFragment"
+            app:destination="@id/interactiveMapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/interactiveMapFragment"
+        android:name="com.htthinhus.gpstracker.InteractiveMapFragment"
+        android:label="fragment_interactive_map"
+        tools:layout="@layout/fragment_interactive_map" />
+</navigation>
