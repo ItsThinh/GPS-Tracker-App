@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "221077038737",
+    "firebase_url": "https://esp32-gps-neo-6m-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "esp32-gps-neo-6m",
+    "storage_bucket": "esp32-gps-neo-6m.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221077038737:android:f36d8b1b8cc7b1a90d4130",
+        "android_client_info": {
+          "package_name": "com.htthinhus.gpstracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIJKGMuapD4rhSX0XJ1ZqQ9AopojCYCdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221077038737:android:2cc69854b70faf5e0d4130",
+        "android_client_info": {
+          "package_name": "com.htthinhus.tracking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIJKGMuapD4rhSX0XJ1ZqQ9AopojCYCdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
