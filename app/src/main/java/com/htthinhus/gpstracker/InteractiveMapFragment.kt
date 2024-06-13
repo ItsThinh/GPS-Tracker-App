@@ -4,6 +4,7 @@ import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,8 @@ import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.logo.logo
 
 class InteractiveMapFragment : Fragment(), OnMapClickListener {
+
+    private val DEVICE_ID = "cf509abf-e231-43e0-a117-8b22bd25c7ed"
 
     private var _binding: FragmentInteractiveMapBinding? = null
     private val binding get() = _binding!!
@@ -71,6 +74,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             binding.mapView.attribution.enabled = false
         }
         getRealtimeLocation()
+        getVehicleStatus()
     }
 
     override fun onDestroyView() {
@@ -83,7 +87,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     }
 
     private fun getRealtimeLocation() {
-        val firebaseRef = FirebaseDatabase.getInstance().getReference("cf509abf-e231-43e0-a117-8b22bd25c7ed").child("location")
+        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID).child("location")
         firebaseRef.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
@@ -102,6 +106,22 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 }
             }
 
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
+
+    private fun getVehicleStatus() {
+        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID).child("vehicleStatus")
+        firebaseRef.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val vehicleStatus = snapshot.getValue(Boolean::class.java)
+
+                    if (vehicleStatus == true) binding.ivStatusIcon.setImageResource(R.drawable.vehicle_state_on)
+                    else binding.ivStatusIcon.setImageResource(R.drawable.vehicle_state_off)
+                }
+            }
             override fun onCancelled(error: DatabaseError) {
             }
         })
