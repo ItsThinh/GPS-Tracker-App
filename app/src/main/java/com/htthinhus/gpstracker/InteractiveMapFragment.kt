@@ -1,5 +1,6 @@
 package com.htthinhus.gpstracker
 
+import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -119,8 +120,36 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     }
 
     private fun updateMarker(currentPoint: Point) {
+
+        animator?.let {
+            if (it.isStarted) {
+                myGPSAnnotation.point = it.animatedValue as Point
+                it.cancel()
+            }
+        }
+
+        val pointEvaluator = TypeEvaluator<Point> { fraction, startValue, endValue ->
+            Point.fromLngLat(
+                startValue.longitude() + fraction * (endValue.longitude() - startValue.longitude()),
+                startValue.latitude() + fraction * (endValue.latitude() - startValue.latitude())
+            )
+        }
+
+        animator = ValueAnimator().apply {
+            setObjectValues(myGPSAnnotation.point, currentPoint)
+            setEvaluator(pointEvaluator)
+            addUpdateListener {
+                myGPSAnnotation.point = it.animatedValue as Point
+                pointAnnotationManager.update(myGPSAnnotation)
+            }
+            duration = 1000
+            start()
+        }
+
         myGPSAnnotation.point = currentPoint
-        pointAnnotationManager.update(myGPSAnnotation)
+
+//        myGPSAnnotation.point = currentPoint
+//        pointAnnotationManager.update(myGPSAnnotation)
     }
 
 }
