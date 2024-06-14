@@ -4,7 +4,6 @@ import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +44,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     private var isMarkerInitialized = false
     private lateinit var myGPSAnnotation: PointAnnotation
     private lateinit var pointAnnotationManager: PointAnnotationManager
+    private var vehicleState: VehicleState? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,6 +75,9 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         }
         getRealtimeLocation()
         getVehicleStatus()
+        binding.cvVehicleStatus.setOnClickListener {
+            changeLockState()
+        }
     }
 
     override fun onDestroyView() {
@@ -112,19 +115,38 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     }
 
     private fun getVehicleStatus() {
-        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID).child("vehicleStatus")
+        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID).child("vehicleState")
         firebaseRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    val vehicleStatus = snapshot.getValue(Boolean::class.java)
+                    vehicleState = snapshot.getValue(VehicleState::class.java)
 
-                    if (vehicleStatus == true) binding.ivStatusIcon.setImageResource(R.drawable.vehicle_state_on)
-                    else binding.ivStatusIcon.setImageResource(R.drawable.vehicle_state_off)
+                    if (vehicleState != null) {
+                        if (vehicleState!!.locked) {
+                            binding.ivStatusIcon.setImageResource(R.drawable.vehicle_state_locked)
+                            binding.tvVehicleStatus.text = "locked"
+                        } else {
+                            if (vehicleState!!.status) {
+                                binding.ivStatusIcon.setImageResource(R.drawable.vehicle_state_on)
+                                binding.tvVehicleStatus.text = "on"
+                            } else {
+                                binding.ivStatusIcon.setImageResource(R.drawable.vehicle_state_off)
+                                binding.tvVehicleStatus.text = "off"
+                            }
+                        }
+                    }
                 }
             }
             override fun onCancelled(error: DatabaseError) {
             }
         })
+    }
+
+    private fun changeLockState() {
+        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID).child("vehicleState").child("locked")
+        if (vehicleState != null) {
+            firebaseRef.setValue(!vehicleState!!.locked)
+        }
     }
 
     private fun initializeMarker(currentPoint: Point) {
