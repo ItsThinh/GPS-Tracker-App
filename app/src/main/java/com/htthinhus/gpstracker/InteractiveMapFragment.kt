@@ -4,6 +4,7 @@ import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +19,11 @@ import com.htthinhus.gpstracker.databinding.FragmentInteractiveMapBinding
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxMap
+import com.mapbox.maps.ScreenCoordinate
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.style
+import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import com.mapbox.maps.plugin.animation.easeTo
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
@@ -30,6 +34,7 @@ import com.mapbox.maps.plugin.compass.compass
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.logo.logo
+import java.time.LocalDate
 
 class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
@@ -62,12 +67,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             style(Style.OUTDOORS){
             }
         ) {
-            val cameraOptions = CameraOptions.Builder()
-                .center(currentPoint)
-                .zoom(15.0)
-                .build()
-            mapboxMap.setCamera(cameraOptions)
-
             binding.mapView.gestures.pitchEnabled = false
             binding.mapView.compass.enabled = false
             binding.mapView.logo.enabled = false
@@ -78,6 +77,13 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         binding.cvVehicleStatus.setOnClickListener {
             changeLockState()
         }
+
+        val dateString = "2024-06-05"
+        val date = LocalDate.parse(dateString)
+        Log.d(
+            "TIMETIME",
+            "${date.dayOfMonth} ${date.monthValue} ${date.year}"
+            )
     }
 
     override fun onDestroyView() {
@@ -99,13 +105,23 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                         firebaseLatLng!!.longitude,
                         firebaseLatLng.latitude
                     )
-                    Toast.makeText(context, currentPoint.toString(), Toast.LENGTH_LONG).show()
                     if (isMarkerInitialized) {
                         updateMarker(currentPoint)
                     } else {
                         initializeMarker(currentPoint)
                         isMarkerInitialized = true
                     }
+
+                    val cameraOptions = CameraOptions.Builder()
+                        .center(currentPoint)
+                        .zoom(15.0)
+                        .build()
+                    binding.mapView.mapboxMap.easeTo(
+                        cameraOptions,
+                        MapAnimationOptions.mapAnimationOptions {
+                            duration(0)
+                        }
+                    )
                 }
             }
 
@@ -184,14 +200,23 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 myGPSAnnotation.point = it.animatedValue as Point
                 pointAnnotationManager.update(myGPSAnnotation)
             }
-            duration = 1000
+            duration = 3000
             start()
         }
 
         myGPSAnnotation.point = currentPoint
 
-//        myGPSAnnotation.point = currentPoint
-//        pointAnnotationManager.update(myGPSAnnotation)
+        val cameraOptions = CameraOptions.Builder()
+            .center(myGPSAnnotation.point)
+            .zoom(15.0)
+            .build()
+        binding.mapView.mapboxMap.easeTo(
+            cameraOptions,
+            MapAnimationOptions.mapAnimationOptions {
+                duration(3000)
+            }
+        )
+
     }
 
 }
