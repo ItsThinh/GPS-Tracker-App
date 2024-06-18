@@ -18,5 +18,14 @@
         android:id="@+id/interactiveMapFragment"
         android:name="com.htthinhus.gpstracker.InteractiveMapFragment"
         android:label="fragment_interactive_map"
-        tools:layout="@layout/fragment_interactive_map" />
+        tools:layout="@layout/fragment_interactive_map" >
+        <action
+            android:id="@+id/action_interactiveMapFragment_to_vehicleSessionsFragment"
+            app:destination="@id/vehicleSessionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/vehicleSessionsFragment"
+        android:name="com.htthinhus.gpstracker.VehicleSessionsFragment"
+        android:label="fragment_vehicle_sessions"
+        tools:layout="@layout/fragment_vehicle_sessions" />
 </navigation>

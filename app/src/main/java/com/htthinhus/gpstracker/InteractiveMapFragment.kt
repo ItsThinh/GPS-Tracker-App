@@ -11,10 +11,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.graphics.scale
+import androidx.navigation.fragment.findNavController
+import com.google.firebase.Timestamp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.type.Date
 import com.htthinhus.gpstracker.databinding.FragmentInteractiveMapBinding
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -34,7 +40,13 @@ import com.mapbox.maps.plugin.compass.compass
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.logo.logo
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import java.util.TimeZone
+import kotlin.time.Duration.Companion.seconds
 
 class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
@@ -84,11 +96,77 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             "TIMETIME",
             "${date.dayOfMonth} ${date.monthValue} ${date.year}"
             )
+
+        testGetFirestoreData()
+
+        Log.d("TIMESTAMPPPPP", Timestamp.now().toString())
+
+        binding.btnVehicleSessions.setOnClickListener {
+            findNavController().navigate(R.id.action_interactiveMapFragment_to_vehicleSessionsFragment)
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun testGetFirestoreData() {
+        val docRef = FirebaseFirestore.getInstance()
+            .collection("devices")
+            .document("cf509abf-e231-43e0-a117-8b22bd25c7ed")
+            .collection("locations")
+
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("GMT+7"))
+        dateFormat.timeZone = TimeZone.getTimeZone("GMT+7")
+//        val startTimestamp = Timestamp(dateFormat.parse("2024-06-17 03:26:00")).seconds
+//        val endTimestamp = Timestamp(dateFormat.parse("2024-06-17 03:27:00")).seconds
+
+        val endTimestamp = Timestamp(java.util.Date(dateFormat.parse("2024-06-17 03:26:00").time))
+
+        val query = docRef
+            //.whereGreaterThanOrEqualTo("timestamp", startTimestamp)
+            .whereLessThanOrEqualTo("timestamp", endTimestamp)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    Log.d("QUERY_TEST", "${document.id} => ${document.data}")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w("QUERY_TEST", "Error getting documents: ", exception)
+            }
+
+
+//        docRef.get()
+//            .addOnSuccessListener { documents ->
+//                if (documents != null) {
+//                    for (document in documents) {
+//                        Log.d("QUERY_TEST", "${document.id} => ${document.data}")
+//                    }
+//                } else {
+//                    Log.d("DOC_NAMES", "no such document")
+//                }
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.d("DOC_NAMES", "get fail with $exception")
+//            }
+
+//        val usersRef = FirebaseFirestore.getInstance().collection("user")
+//        val query = usersRef.whereEqualTo("isActive", true)
+//        query.get()
+//            .addOnSuccessListener { documents ->
+//                if (documents.isEmpty) {
+//                    Log.d("QUERY_TEST", "No matching documents found.")
+//                } else {
+//                    for (document in documents) {
+//                        Log.d("QUERY_TEST", "${document.id} => ${document.data}")
+//                    }
+//                }
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.w("QUERY_TEST", "Error getting documents: ", exception)
+//            }
     }
 
     override fun onMapClick(point: Point): Boolean {
