@@ -14,6 +14,7 @@ class VehicleSessionAdapter(val vehicleSessionList: ArrayList<VehicleSession>): 
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val tvTimestampStart: TextView = itemView.findViewById(R.id.tvTimestampStart)
         val tvTimestampEnd: TextView = itemView.findViewById(R.id.tvTimestampEnd)
+        val tvDrivingTime: TextView = itemView.findViewById(R.id.tvDrivingTime)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -34,7 +35,18 @@ class VehicleSessionAdapter(val vehicleSessionList: ArrayList<VehicleSession>): 
         val startTime = dateFormat.format(Date(vehicleSessionList[position].startTime!!.seconds*1000))
         val endTime = dateFormat.format(Date(vehicleSessionList[position].endTime!!.seconds*1000))
 
+        val drivingTimeSeconds =
+            (vehicleSessionList[position].endTime!!.seconds - vehicleSessionList[position].startTime!!.seconds)
+
         holder.tvTimestampStart.text = startTime.toString()
         holder.tvTimestampEnd.text = endTime.toString()
+        holder.tvDrivingTime.text =  formatSecondsToHHMMSS(drivingTimeSeconds)
+    }
+
+    fun formatSecondsToHHMMSS(seconds: Long): String {
+        val hour = seconds / 3600
+        val minute = (seconds % 3600) / 60
+        val second = seconds % 60
+        return String.format("%02d:%02d:%02d", hour, minute, second)
     }
 }
