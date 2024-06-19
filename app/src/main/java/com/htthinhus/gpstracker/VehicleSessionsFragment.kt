@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,6 +20,7 @@ class VehicleSessionsFragment : Fragment() {
 
     private lateinit var vehicleSessionList: ArrayList<VehicleSession>
 
+    private lateinit var vehicleSessionAdapter: VehicleSessionAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,11 +49,26 @@ class VehicleSessionsFragment : Fragment() {
                         vehicleSessionList.add(session)
                     }
                 }
-                binding.rvVehicleSessions.adapter = VehicleSessionAdapter(vehicleSessionList)
+                vehicleSessionAdapter = VehicleSessionAdapter(vehicleSessionList)
+                binding.rvVehicleSessions.adapter = vehicleSessionAdapter
+
+                vehicleSessionAdapter.onItemClick = { vehicleSession ->
+                    Toast.makeText(context, "${vehicleSession.startTime}", Toast.LENGTH_SHORT).show()
+
+                    val direction =
+                        VehicleSessionsFragmentDirections
+                            .actionVehicleSessionsFragmentToVehicleSessionDetailFragment(
+                                vehicleSession.startTime!!.seconds,
+                                vehicleSession.endTime!!.seconds
+                            )
+                    findNavController().navigate(direction)
+                }
             }
             .addOnFailureListener { exception ->
                 Log.w("VEHICLE_SESSIONS", exception)
             }
+
+
 
     }
 

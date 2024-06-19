@@ -27,5 +27,21 @@
         android:id="@+id/vehicleSessionsFragment"
         android:name="com.htthinhus.gpstracker.VehicleSessionsFragment"
         android:label="fragment_vehicle_sessions"
-        tools:layout="@layout/fragment_vehicle_sessions" />
+        tools:layout="@layout/fragment_vehicle_sessions" >
+        <action
+            android:id="@+id/action_vehicleSessionsFragment_to_vehicleSessionDetailFragment"
+            app:destination="@id/vehicleSessionDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/vehicleSessionDetailFragment"
+        android:name="com.htthinhus.gpstracker.VehicleSessionDetailFragment"
+        android:label="fragment_vehicle_session_detail"
+        tools:layout="@layout/fragment_vehicle_session_detail" >
+        <argument
+            android:name="startTime"
+            app:argType="long" />
+        <argument
+            android:name="endTime"
+            app:argType="long" />
+    </fragment>
 </navigation>

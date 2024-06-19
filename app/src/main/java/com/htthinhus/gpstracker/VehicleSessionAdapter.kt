@@ -11,6 +11,8 @@ import java.util.Date
 import java.util.TimeZone
 
 class VehicleSessionAdapter(val vehicleSessionList: ArrayList<VehicleSession>): RecyclerView.Adapter<VehicleSessionAdapter.MyViewHolder>() {
+
+    var onItemClick: ((VehicleSession) -> Unit)? = null
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val tvTimestampStart: TextView = itemView.findViewById(R.id.tvTimestampStart)
         val tvTimestampEnd: TextView = itemView.findViewById(R.id.tvTimestampEnd)
@@ -36,17 +38,23 @@ class VehicleSessionAdapter(val vehicleSessionList: ArrayList<VehicleSession>): 
         val endTime = dateFormat.format(Date(vehicleSessionList[position].endTime!!.seconds*1000))
 
         val drivingTimeSeconds =
-            (vehicleSessionList[position].endTime!!.seconds - vehicleSessionList[position].startTime!!.seconds)
+            vehicleSessionList[position].endTime!!.seconds - vehicleSessionList[position].startTime!!.seconds
 
         holder.tvTimestampStart.text = startTime.toString()
         holder.tvTimestampEnd.text = endTime.toString()
         holder.tvDrivingTime.text =  formatSecondsToHHMMSS(drivingTimeSeconds)
+
+        holder.itemView.setOnClickListener {
+            onItemClick?.invoke(vehicleSessionList[position])
+        }
     }
 
-    fun formatSecondsToHHMMSS(seconds: Long): String {
+    private fun formatSecondsToHHMMSS(seconds: Long): String {
         val hour = seconds / 3600
         val minute = (seconds % 3600) / 60
         val second = seconds % 60
         return String.format("%02d:%02d:%02d", hour, minute, second)
     }
+
+
 }

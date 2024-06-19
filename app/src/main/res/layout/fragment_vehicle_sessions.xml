@@ -9,6 +9,6 @@
         android:id="@+id/rvVehicleSessions"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#AFD3F8"
+        android:background="#BDD7FF"
         tools:listitem="@layout/item_vehicle_session"/>
 </FrameLayout>
