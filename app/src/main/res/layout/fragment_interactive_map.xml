@@ -18,8 +18,8 @@
         android:layout_gravity="bottom|start"
         android:layout_marginStart="15dp"
         android:layout_marginBottom="20dp"
-        app:contentPadding="5dp"
-        app:strokeWidth="1.5dp"
+        app:contentPadding="8dp"
+        app:strokeWidth="2dp"
         app:strokeColor="@color/black">
 
         <androidx.constraintlayout.widget.ConstraintLayout

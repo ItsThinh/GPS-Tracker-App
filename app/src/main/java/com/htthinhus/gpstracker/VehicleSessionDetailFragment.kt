@@ -68,7 +68,7 @@ class VehicleSessionDetailFragment : Fragment() {
 
         binding.tvStartTime.text = startTime
         binding.tvEndTime.text = endTime
-        binding.tvDrivingTime.text = drivingTimeSeconds.toString()
+        binding.tvDrivingTime.text = formatSecondsToHHMMSS(drivingTimeSeconds)
 
         pointList = arrayListOf()
 
@@ -110,6 +110,13 @@ class VehicleSessionDetailFragment : Fragment() {
 
 
             }
+    }
+
+    private fun formatSecondsToHHMMSS(seconds: Long): String {
+        val hour = seconds / 3600
+        val minute = (seconds % 3600) / 60
+        val second = seconds % 60
+        return String.format("%02d:%02d:%02d", hour, minute, second)
     }
 
     private fun setPlaces() {
