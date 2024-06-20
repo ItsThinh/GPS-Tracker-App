@@ -53,8 +53,6 @@ class VehicleSessionsFragment : Fragment() {
                 binding.rvVehicleSessions.adapter = vehicleSessionAdapter
 
                 vehicleSessionAdapter.onItemClick = { vehicleSession ->
-                    Toast.makeText(context, "${vehicleSession.startTime}", Toast.LENGTH_SHORT).show()
-
                     val direction =
                         VehicleSessionsFragmentDirections
                             .actionVehicleSessionsFragmentToVehicleSessionDetailFragment(

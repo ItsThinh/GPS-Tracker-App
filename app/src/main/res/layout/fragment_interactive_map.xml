@@ -66,4 +66,15 @@
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="20dp" />
 
+    <Button
+        android:id="@+id/btnSetFuel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="set fuel"
+        android:textAllCaps="true"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="70dp"/>
+
+
 </FrameLayout>

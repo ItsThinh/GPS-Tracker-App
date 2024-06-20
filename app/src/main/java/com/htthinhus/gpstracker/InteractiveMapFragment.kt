@@ -2,6 +2,7 @@ package com.htthinhus.gpstracker
 
 import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
+import android.app.AlertDialog
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.graphics.scale
 import androidx.navigation.fragment.findNavController
@@ -90,25 +92,52 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             changeLockState()
         }
 
-        val dateString = "2024-06-05"
-        val date = LocalDate.parse(dateString)
-        Log.d(
-            "TIMETIME",
-            "${date.dayOfMonth} ${date.monthValue} ${date.year}"
-            )
-
         testGetFirestoreData()
-
-        Log.d("TIMESTAMPPPPP", Timestamp.now().toString())
 
         binding.btnVehicleSessions.setOnClickListener {
             findNavController().navigate(R.id.action_interactiveMapFragment_to_vehicleSessionsFragment)
+        }
+
+        binding.btnSetFuel.setOnClickListener {
+            showUpdateFuelValueDialog()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showUpdateFuelValueDialog() {
+        val editText = EditText(context)
+        editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+
+        AlertDialog.Builder(context)
+            .setTitle("Update fuel value")
+            .setMessage("Enter fuel consumption per 100 km")
+            .setView(editText)
+            .setPositiveButton("Enter") { dialog, which ->
+                val newGgValue = editText.text.toString().toIntOrNull()
+                if (newGgValue != null) {
+                    updateFuelValue(newGgValue)
+                } else {
+                    editText.error = "Please enter a valid number"
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun updateFuelValue(newFuelValue: Int) {
+        val mySharedPreferences = MySharedPreferences(requireContext())
+
+        val firestoreRef = FirebaseFirestore.getInstance()
+            .collection("devices")
+            .document("cf509abf-e231-43e0-a117-8b22bd25c7ed")
+            .update("fuelConsumption100km", newFuelValue.toLong())
+            .addOnSuccessListener {
+                mySharedPreferences.setFuelConsumption100km(newFuelValue)
+            }
     }
 
     private fun testGetFirestoreData() {

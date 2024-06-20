@@ -100,6 +100,12 @@ class VehicleSessionDetailFragment : Fragment() {
                     val formattedStringDistanceDriven = String.format(Locale.ENGLISH, "%.3f", distanceDriven) + " km"
                     binding.tvDistanceDriven.text = formattedStringDistanceDriven
 
+                    val mySharedPreferences = MySharedPreferences(requireContext())
+                    val fuelConsumption100km = mySharedPreferences.getFuelConsumption100km().toDouble()
+                    val fuelConsumptionSession = fuelConsumption100km/100*distanceDriven
+                    val formattedfuelConsumptionSession=String.format(Locale.ENGLISH, "%.4f", fuelConsumptionSession) + " L"
+                    binding.tvFuelConsumption.text = formattedfuelConsumptionSession
+
                     val formattedStringFirstLocation = "${pointList[0].latitude()}, ${pointList[0].longitude()}"
                     val formattedStringLastLocation = "${pointList[pointList.size - 1].latitude()}, ${pointList[pointList.size - 1].longitude()}"
                     binding.tvFirstLocation.text = formattedStringFirstLocation
@@ -107,8 +113,6 @@ class VehicleSessionDetailFragment : Fragment() {
 
                     setPlaces()
                 }
-
-
             }
     }
 
