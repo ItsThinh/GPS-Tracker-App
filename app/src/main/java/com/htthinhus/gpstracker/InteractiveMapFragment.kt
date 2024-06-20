@@ -52,10 +52,11 @@ import kotlin.time.Duration.Companion.seconds
 
 class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
+    private var firstTimeOpenFragment = true
+
     private val DEVICE_ID = "cf509abf-e231-43e0-a117-8b22bd25c7ed"
 
-    private var _binding: FragmentInteractiveMapBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentInteractiveMapBinding
 
     private lateinit var mapboxMap: MapboxMap
     private var animator: ValueAnimator? = null
@@ -69,7 +70,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentInteractiveMapBinding.inflate(inflater, container, false)
+        binding = FragmentInteractiveMapBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -103,11 +104,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun showUpdateFuelValueDialog() {
         val editText = EditText(context)
         editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER
@@ -117,9 +113,9 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             .setMessage("Enter fuel consumption per 100 km")
             .setView(editText)
             .setPositiveButton("Enter") { dialog, which ->
-                val newGgValue = editText.text.toString().toIntOrNull()
-                if (newGgValue != null) {
-                    updateFuelValue(newGgValue)
+                val newFuelValue = editText.text.toString().toIntOrNull()
+                if (newFuelValue != null) {
+                    updateFuelValue(newFuelValue)
                 } else {
                     editText.error = "Please enter a valid number"
                 }
@@ -219,16 +215,19 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                         isMarkerInitialized = true
                     }
 
-                    val cameraOptions = CameraOptions.Builder()
-                        .center(currentPoint)
-                        .zoom(15.0)
-                        .build()
-                    binding.mapView.mapboxMap.easeTo(
-                        cameraOptions,
-                        MapAnimationOptions.mapAnimationOptions {
-                            duration(0)
-                        }
-                    )
+                    if (firstTimeOpenFragment) {
+                        val cameraOptions = CameraOptions.Builder()
+                            .center(currentPoint)
+                            .zoom(15.0)
+                            .build()
+                        binding.mapView.mapboxMap.easeTo(
+                            cameraOptions,
+                            MapAnimationOptions.mapAnimationOptions {
+                                duration(0)
+                            }
+                        )
+                        firstTimeOpenFragment = false
+                    }
                 }
             }
 
