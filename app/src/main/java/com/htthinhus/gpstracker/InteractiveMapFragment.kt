@@ -53,6 +53,9 @@ import kotlin.time.Duration.Companion.seconds
 class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
     private var firstTimeOpenFragment = true
+    private var isMarkerInitialized = false
+
+    private var vehicleState: VehicleState? = null
 
     private val DEVICE_ID = "cf509abf-e231-43e0-a117-8b22bd25c7ed"
 
@@ -60,11 +63,9 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
     private lateinit var mapboxMap: MapboxMap
     private var animator: ValueAnimator? = null
-    private val currentPoint = Point.fromLngLat(107.080641, 10.344681)
-    private var isMarkerInitialized = false
     private lateinit var myGPSAnnotation: PointAnnotation
     private lateinit var pointAnnotationManager: PointAnnotationManager
-    private var vehicleState: VehicleState? = null
+    private val currentPoint = Point.fromLngLat(107.080641, 10.344681)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,6 +77,23 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        firstTimeOpenFragment = true
+        isMarkerInitialized = false
+
+        setMapStyle()
+
+        testGetFirestoreData()
+
+        binding.btnVehicleSessions.setOnClickListener {
+            findNavController().navigate(R.id.action_interactiveMapFragment_to_vehicleSessionsFragment)
+        }
+
+        binding.btnSetFuel.setOnClickListener {
+            showUpdateFuelValueDialog()
+        }
+    }
+
+    private fun setMapStyle() {
         mapboxMap = binding.mapView.mapboxMap
 
         mapboxMap.loadStyle(
@@ -91,16 +109,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         getVehicleStatus()
         binding.cvVehicleStatus.setOnClickListener {
             changeLockState()
-        }
-
-        testGetFirestoreData()
-
-        binding.btnVehicleSessions.setOnClickListener {
-            findNavController().navigate(R.id.action_interactiveMapFragment_to_vehicleSessionsFragment)
-        }
-
-        binding.btnSetFuel.setOnClickListener {
-            showUpdateFuelValueDialog()
         }
     }
 
@@ -215,6 +223,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                         isMarkerInitialized = true
                     }
 
+                    Log.d("FIRST_OPEN_STATE", "firstTimeOpenFragment: $firstTimeOpenFragment")
                     if (firstTimeOpenFragment) {
                         val cameraOptions = CameraOptions.Builder()
                             .center(currentPoint)
@@ -228,6 +237,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                         )
                         firstTimeOpenFragment = false
                     }
+
                 }
             }
 

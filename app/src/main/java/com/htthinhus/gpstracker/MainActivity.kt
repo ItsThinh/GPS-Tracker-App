@@ -57,20 +57,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         createNotificationChannel()
-
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w("FCM_TOKEN", "Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
-            }
-
-            // Get new FCM registration token
-            val token = task.result
-
-            // Log and toast
-            Log.d("FCM_TOKEN", token)
-            Toast.makeText(this, token, Toast.LENGTH_SHORT).show()
-        })
     }
 
     private fun createNotificationChannel() {
