@@ -10,7 +10,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -25,6 +28,24 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        getFuel()
+
+        setupBottomNavigationMenu()
+
+        createNotificationChannel()
+    }
+
+    private fun setupBottomNavigationMenu() {
+        val bottomNavigationView =
+            findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navController = navHostFragment.navController
+        bottomNavigationView.setupWithNavController(navController)
+    }
+
+    private fun getFuel() {
         val mySharedPreferences = MySharedPreferences(this)
         if (mySharedPreferences.getFuelConsumption100km() == 0) {
             val firestoreRef = FirebaseFirestore.getInstance()
@@ -40,23 +61,6 @@ class MainActivity : AppCompatActivity() {
                     Log.d("FUEL", it.toString())
                 }
         }
-
-        val USER_UID = "naw7Ba6apLNIstW0sm491NGXx3G2"
-        val firestoreRef = FirebaseFirestore.getInstance()
-            .collection("users")
-            .document(USER_UID)
-            .collection("fcmTokens")
-            .document("token1234")
-
-        firestoreRef.set(emptyMap<String, Any>())
-            .addOnSuccessListener {
-                Log.d("SENDING_FCM_TOKEN", "Token sent")
-            }
-            .addOnFailureListener {
-                Log.d("SENDING_FCM_TOKEN", it.toString())
-            }
-
-        createNotificationChannel()
     }
 
     private fun createNotificationChannel() {

@@ -18,11 +18,7 @@
         android:id="@+id/interactiveMapFragment"
         android:name="com.htthinhus.gpstracker.InteractiveMapFragment"
         android:label="fragment_interactive_map"
-        tools:layout="@layout/fragment_interactive_map" >
-        <action
-            android:id="@+id/action_interactiveMapFragment_to_vehicleSessionsFragment"
-            app:destination="@id/vehicleSessionsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_interactive_map" />
     <fragment
         android:id="@+id/vehicleSessionsFragment"
         android:name="com.htthinhus.gpstracker.VehicleSessionsFragment"
@@ -44,4 +40,9 @@
             android:name="endTime"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.htthinhus.gpstracker.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

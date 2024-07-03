@@ -3,4 +3,6 @@
     <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">pk.eyJ1IjoiaHR0aGluaCIsImEiOiJjbHd3ang1N20xMTgxMmtwdjgxM3h6Z2FrIn0.XxZCHxqmGXk8KoUpm68jHA
     </string>
     <string name="mapbox_downloads_token" translatable="false" tools:ignore="UnusedResources">sk.eyJ1IjoiaHR0aGluaCIsImEiOiJjbHhibWE2c3QxdG85MnFyMGV3b3FjMHgxIn0.mAAtc5fFGsQ0E4litnjZew</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

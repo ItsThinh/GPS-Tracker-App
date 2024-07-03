@@ -84,9 +84,9 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
         testGetFirestoreData()
 
-        binding.btnVehicleSessions.setOnClickListener {
-            findNavController().navigate(R.id.action_interactiveMapFragment_to_vehicleSessionsFragment)
-        }
+//        binding.btnVehicleSessions.setOnClickListener {
+//            findNavController().navigate(R.id.action_interactiveMapFragment_to_vehicleSessionsFragment)
+//        }
 
         binding.btnSetFuel.setOnClickListener {
             showUpdateFuelValueDialog()

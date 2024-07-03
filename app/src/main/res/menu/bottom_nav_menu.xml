@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/interactiveMapFragment"
+        android:title="Map"
+        android:icon="@drawable/sharp_globe_24"/>
+    <item
+        android:id="@+id/vehicleSessionsFragment"
+        android:title="Sessions"
+        android:icon="@drawable/sharp_list_alt_24"/>
+    <item
+        android:id="@+id/settingsFragment"
+        android:title="Settings"
+        android:icon="@drawable/sharp_manage_accounts_24"/>
+</menu>
