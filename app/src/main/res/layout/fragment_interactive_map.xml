@@ -68,11 +68,13 @@
         android:layout_marginBottom="15dp"/>
 
     <Button
+        style="?attr/materialIconButtonFilledStyle"
         android:id="@+id/btnChangeMapMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="mode"
-        android:textAllCaps="true"
+        android:contentDescription="Change map style"
+        app:icon="@drawable/baseline_satellite_alt_24"
+        app:iconSize="30dp"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="70dp"/>

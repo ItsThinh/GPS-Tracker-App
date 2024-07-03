@@ -51,7 +51,9 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
     private var vehicleState: VehicleState? = null
 
-    private val DEVICE_ID = "cf509abf-e231-43e0-a117-8b22bd25c7ed"
+
+
+    private lateinit var mySharedPreferences: MySharedPreferences
 
     private lateinit var binding: FragmentInteractiveMapBinding
 
@@ -59,7 +61,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     private var animator: ValueAnimator? = null
     private lateinit var myGPSAnnotation: PointAnnotation
     private lateinit var pointAnnotationManager: PointAnnotationManager
-    private val currentPoint = Point.fromLngLat(107.080641, 10.344681)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,6 +74,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         super.onViewCreated(view, savedInstanceState)
         firstTimeOpenFragment = true
         isMarkerInitialized = false
+        mySharedPreferences = MySharedPreferences(requireContext())
 
         setMapStyle()
 
@@ -80,7 +82,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
         binding.btnChangeMapMode.setOnClickListener {
             binding.mapView.mapboxMap.loadStyle(
-                style(Style.SATELLITE_STREETS){}
+                style(mySharedPreferences.setNewMapStyle()){}
             )
         }
 
@@ -93,7 +95,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         mapboxMap = binding.mapView.mapboxMap
 
         mapboxMap.loadStyle(
-            style(Style.OUTDOORS){
+            style(mySharedPreferences.getMapStyle()){
             }
         ) {
             binding.mapView.gestures.pitchEnabled = false
@@ -129,7 +131,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     }
 
     private fun updateFuelValue(newFuelValue: Int) {
-        val mySharedPreferences = MySharedPreferences(requireContext())
+
 
         val firestoreRef = FirebaseFirestore.getInstance()
             .collection("devices")
@@ -329,6 +331,10 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             }
         )
 
+    }
+
+    companion object {
+        private const val DEVICE_ID = "cf509abf-e231-43e0-a117-8b22bd25c7ed"
     }
 
 }
