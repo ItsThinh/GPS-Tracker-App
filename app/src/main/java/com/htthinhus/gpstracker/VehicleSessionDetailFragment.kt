@@ -127,7 +127,7 @@ class VehicleSessionDetailFragment : Fragment() {
         val reverseGeocodeStart = MapboxGeocoding.builder()
             .accessToken(getString(R.string.mapbox_downloads_token))
             .query(Point.fromLngLat(pointList[0].longitude(), pointList[0].latitude()))
-            .geocodingTypes(GeocodingCriteria.TYPE_POI)
+            .geocodingTypes(GeocodingCriteria.TYPE_LOCALITY)
             .build()
         reverseGeocodeStart.enqueueCall(object : Callback<GeocodingResponse> {
             override fun onResponse(call: Call<GeocodingResponse>, response: Response<GeocodingResponse>) {
@@ -148,7 +148,7 @@ class VehicleSessionDetailFragment : Fragment() {
         val reverseGeocodeEnd = MapboxGeocoding.builder()
             .accessToken(getString(R.string.mapbox_downloads_token))
             .query(Point.fromLngLat(pointList[0].longitude(), pointList[0].latitude()))
-            .geocodingTypes(GeocodingCriteria.TYPE_POI)
+            .geocodingTypes(GeocodingCriteria.TYPE_LOCALITY)
             .build()
         reverseGeocodeEnd.enqueueCall(object : Callback<GeocodingResponse> {
             override fun onResponse(call: Call<GeocodingResponse>, response: Response<GeocodingResponse>) {
