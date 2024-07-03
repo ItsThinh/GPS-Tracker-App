@@ -1,4 +1,4 @@
-package com.htthinhus.gpstracker
+package com.htthinhus.gpstracker.fragments
 
 import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
@@ -11,23 +11,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import androidx.core.graphics.scale
-import androidx.navigation.fragment.findNavController
 import com.google.firebase.Timestamp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.type.Date
+import com.htthinhus.gpstracker.utils.MySharedPreferences
+import com.htthinhus.gpstracker.R
+import com.htthinhus.gpstracker.models.RealtimeLatLng
+import com.htthinhus.gpstracker.models.VehicleState
 import com.htthinhus.gpstracker.databinding.FragmentInteractiveMapBinding
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxMap
-import com.mapbox.maps.ScreenCoordinate
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.style
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
@@ -43,12 +41,8 @@ import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.logo.logo
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.TimeZone
-import kotlin.time.Duration.Companion.seconds
 
 class InteractiveMapFragment : Fragment(), OnMapClickListener {
 

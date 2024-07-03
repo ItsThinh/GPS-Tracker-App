@@ -1,6 +1,5 @@
-package com.htthinhus.gpstracker
+package com.htthinhus.gpstracker.fragments
 
-import com.htthinhus.gpstracker.BuildConfig
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,7 +11,9 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.Query
+import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.databinding.FragmentVehicleSessionDetailBinding
+import com.htthinhus.gpstracker.utils.MySharedPreferences
 import com.mapbox.api.geocoding.v5.GeocodingCriteria
 import com.mapbox.api.geocoding.v5.MapboxGeocoding
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse

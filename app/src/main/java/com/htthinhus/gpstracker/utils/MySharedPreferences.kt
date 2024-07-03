@@ -1,4 +1,4 @@
-package com.htthinhus.gpstracker
+package com.htthinhus.gpstracker.utils
 
 import android.content.Context
 import android.content.SharedPreferences

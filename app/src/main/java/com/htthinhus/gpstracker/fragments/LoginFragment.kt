@@ -1,12 +1,12 @@
-package com.htthinhus.gpstracker
+package com.htthinhus.gpstracker.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.databinding.FragmentLoginBinding
 
 class LoginFragment : Fragment() {

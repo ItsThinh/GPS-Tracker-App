@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.htthinhus.gpstracker.LoginFragment"
+        android:name="com.htthinhus.gpstracker.fragments.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -16,12 +16,12 @@
     </fragment>
     <fragment
         android:id="@+id/interactiveMapFragment"
-        android:name="com.htthinhus.gpstracker.InteractiveMapFragment"
+        android:name="com.htthinhus.gpstracker.fragments.InteractiveMapFragment"
         android:label="fragment_interactive_map"
         tools:layout="@layout/fragment_interactive_map" />
     <fragment
         android:id="@+id/vehicleSessionsFragment"
-        android:name="com.htthinhus.gpstracker.VehicleSessionsFragment"
+        android:name="com.htthinhus.gpstracker.fragments.VehicleSessionsFragment"
         android:label="fragment_vehicle_sessions"
         tools:layout="@layout/fragment_vehicle_sessions" >
         <action
@@ -30,7 +30,7 @@
     </fragment>
     <fragment
         android:id="@+id/vehicleSessionDetailFragment"
-        android:name="com.htthinhus.gpstracker.VehicleSessionDetailFragment"
+        android:name="com.htthinhus.gpstracker.fragments.VehicleSessionDetailFragment"
         android:label="fragment_vehicle_session_detail"
         tools:layout="@layout/fragment_vehicle_session_detail" >
         <argument
@@ -42,7 +42,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.htthinhus.gpstracker.SettingsFragment"
+        android:name="com.htthinhus.gpstracker.fragments.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
 </navigation>

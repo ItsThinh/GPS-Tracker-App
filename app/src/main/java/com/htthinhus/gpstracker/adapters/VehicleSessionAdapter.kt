@@ -1,11 +1,12 @@
-package com.htthinhus.gpstracker
+package com.htthinhus.gpstracker.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.Timestamp
+import com.htthinhus.gpstracker.R
+import com.htthinhus.gpstracker.models.VehicleSession
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone

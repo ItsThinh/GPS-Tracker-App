@@ -1,4 +1,4 @@
-package com.htthinhus.gpstracker
+package com.htthinhus.gpstracker.models
 
 data class VehicleState(
     val status: Boolean = false,

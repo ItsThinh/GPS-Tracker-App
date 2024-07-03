@@ -1,4 +1,4 @@
-package com.htthinhus.gpstracker
+package com.htthinhus.gpstracker.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -6,13 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.htthinhus.gpstracker.adapters.VehicleSessionAdapter
 import com.htthinhus.gpstracker.databinding.FragmentVehicleSessionsBinding
+import com.htthinhus.gpstracker.models.VehicleSession
 
 class VehicleSessionsFragment : Fragment() {
     private var _binding: FragmentVehicleSessionsBinding? = null

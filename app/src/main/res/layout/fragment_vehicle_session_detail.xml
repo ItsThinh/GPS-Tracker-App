@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:layout_gravity="center"
     android:gravity="center"
-    tools:context=".VehicleSessionDetailFragment">
+    tools:context=".fragments.VehicleSessionDetailFragment">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView"

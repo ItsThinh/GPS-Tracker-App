@@ -1,4 +1,4 @@
-package com.htthinhus.gpstracker
+package com.htthinhus.gpstracker.services
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -7,9 +7,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.htthinhus.gpstracker.R
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
     override fun onNewToken(token: String) {
