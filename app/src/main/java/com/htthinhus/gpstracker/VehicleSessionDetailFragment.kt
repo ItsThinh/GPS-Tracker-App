@@ -135,7 +135,7 @@ class VehicleSessionDetailFragment : Fragment() {
                 if (results.size > 0) {
                     val firstResultPoint = results[0].placeName()
                     Log.d("GEOCODER_TEST", "onResponse: " + firstResultPoint!!.toString())
-                    binding.tvStartAddress.text = firstResultPoint
+                    binding.tvStartAddress.text = if (firstResultPoint != null) firstResultPoint else "N/A"
                 } else {
                     Log.d("GEOCODER_TEST", "onResponse: No result found")
                 }
@@ -154,9 +154,9 @@ class VehicleSessionDetailFragment : Fragment() {
             override fun onResponse(call: Call<GeocodingResponse>, response: Response<GeocodingResponse>) {
                 val results = response.body()!!.features()
                 if (results.size > 0) {
-                    val firstResultPoint = results[0].placeName()
+                    val firstResultPoint:String? = results[0].placeName()
                     Log.d("GEOCODER_TEST", "onResponse: " + firstResultPoint!!.toString())
-                    binding.tvEndAddress.text = firstResultPoint
+                    binding.tvEndAddress.text = if (firstResultPoint != null) firstResultPoint else "N/A"
                 } else {
                     Log.d("GEOCODER_TEST", "onResponse: No result found")
                 }

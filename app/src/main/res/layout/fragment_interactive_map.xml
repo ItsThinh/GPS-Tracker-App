@@ -65,6 +65,16 @@
         android:textAllCaps="true"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"/>
+
+    <Button
+        android:id="@+id/btnChangeMapMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="mode"
+        android:textAllCaps="true"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="15dp"
         android:layout_marginBottom="70dp"/>
 
 
