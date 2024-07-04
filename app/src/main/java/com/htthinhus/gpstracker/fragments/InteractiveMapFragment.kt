@@ -12,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.graphics.scale
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.Timestamp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -88,6 +90,10 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
         binding.btnSetFuel.setOnClickListener {
             showUpdateFuelValueDialog()
+        }
+
+        binding.btnToLogin.setOnClickListener {
+            val navController = findNavController().navigate(R.id.loginFragment)
         }
     }
 
