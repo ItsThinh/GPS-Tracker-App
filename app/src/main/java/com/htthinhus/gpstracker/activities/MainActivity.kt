@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getFuel() {
         val mySharedPreferences = MySharedPreferences(this)
-        if (mySharedPreferences.getFuelConsumption100km() == 0) {
+        if (mySharedPreferences.getFuelConsumption100km() == -1) {
             val firestoreRef = FirebaseFirestore.getInstance()
                 .collection("devices")
                 .document("cf509abf-e231-43e0-a117-8b22bd25c7ed")

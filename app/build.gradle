@@ -61,4 +61,6 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:7.0.0'
     implementation 'androidx.annotation:annotation:1.0.0'
 
+    implementation libs.androidx.preference.ktx
+
 }

@@ -2,6 +2,7 @@ package com.htthinhus.gpstracker.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.mapbox.maps.Style
 
 class MySharedPreferences(context: Context) {
@@ -11,7 +12,7 @@ class MySharedPreferences(context: Context) {
     private val keyMapStyle = "mapStyle"
 
     fun getFuelConsumption100km(): Int {
-        return sharedPreferences.getInt(keyFuelConsumption100km, 0)
+        return sharedPreferences.getInt(keyFuelConsumption100km, -1)
     }
 
     fun setFuelConsumption100km(value: Int) {
