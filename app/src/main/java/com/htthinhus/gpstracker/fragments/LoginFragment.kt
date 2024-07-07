@@ -7,16 +7,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.databinding.FragmentLoginBinding
+import com.htthinhus.gpstracker.viewmodels.UserViewModel
 
 class LoginFragment : Fragment() {
 
-    private lateinit var auth: FirebaseAuth
+    private val userViewModel: UserViewModel by activityViewModels()
+    private lateinit var savedStateHandle: SavedStateHandle
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
@@ -30,35 +35,41 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        auth = Firebase.auth
+        savedStateHandle =findNavController().previousBackStackEntry!!.savedStateHandle
+        savedStateHandle[LOGIN_SUCCESSFUL] = false
 
-        val currentUser = auth.currentUser
-        if(currentUser!=null) {
-            Toast.makeText(requireContext(), "Already login", Toast.LENGTH_SHORT).show()
-        } else Toast.makeText(requireContext(), "Not login", Toast.LENGTH_SHORT).show()
+        val emailEditText = binding.etEmail
+        val passwordEditText = binding.etPassword
 
         binding.btnLogIn.setOnClickListener {
-            if(true) {
-                auth.signInWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
-                    .addOnCompleteListener() {  task ->
-                        if(task.isSuccessful) {
-                            val user = auth.currentUser
-                        } else {
-                            Log.w("LOGIN_FRAGMENT", "SignIn with Email: failure", task.exception)
-
-                        }
-                    }
-            }
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+            login(email, password)
         }
 
         binding.tvToSignup.setOnClickListener {
-            val navController = findNavController().navigate(R.id.action_loginFragment_to_signupFragment)
+            findNavController().navigate(R.id.action_loginFragment_to_signupFragment)
         }
+    }
+
+    fun login(email: String, password: String) {
+        userViewModel.login(email, password).observe(viewLifecycleOwner, Observer { result ->
+            if (result) {
+                savedStateHandle[LOGIN_SUCCESSFUL] = true
+                findNavController().popBackStack()
+            } else {
+                Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val LOGIN_SUCCESSFUL = "LOGIN_SUCCESSFUL"
     }
 
 }

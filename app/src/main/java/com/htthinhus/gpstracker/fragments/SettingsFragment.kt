@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -18,10 +21,11 @@ import com.google.firebase.ktx.Firebase
 import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.databinding.FragmentSettingsBinding
 import com.htthinhus.gpstracker.utils.MySharedPreferences
+import com.htthinhus.gpstracker.viewmodels.UserViewModel
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    private lateinit var auth: FirebaseAuth
+    private val userViewModel: UserViewModel by activityViewModels()
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
@@ -29,6 +33,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var mySharedPreference: MySharedPreferences
 
     private lateinit var fuelPreference: EditTextPreference
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,9 +48,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        auth = Firebase.auth
+        userViewModel.loginState.observe(viewLifecycleOwner, Observer { loginState ->
+            if(!loginState) {
+                findNavController().navigate(R.id.loginFragment)
+            }
+        })
+
         binding.btnSignout.setOnClickListener {
-            auth.signOut()
+            userViewModel.logout()
         }
 
         setUpSettings()
@@ -59,7 +69,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun setUpSettings() {
         findPreference<SwitchPreferenceCompat>("notifications")
             ?.setOnPreferenceChangeListener { preference, newValue ->
-                Toast.makeText(context, "Notifications enabled: ${newValue}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Notifications enabled: $newValue", Toast.LENGTH_SHORT).show()
                 true
             }
 

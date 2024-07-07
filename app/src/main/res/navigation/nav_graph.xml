@@ -47,7 +47,7 @@
         tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/signupFragment"
-        android:name="com.htthinhus.gpstracker.SignupFragment"
+        android:name="com.htthinhus.gpstracker.fragments.SignupFragment"
         android:label="fragment_signup"
         tools:layout="@layout/fragment_signup" >
         <action

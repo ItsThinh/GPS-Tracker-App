@@ -12,6 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.graphics.scale
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.Timestamp
 import com.google.firebase.database.DataSnapshot
@@ -24,6 +28,7 @@ import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.models.RealtimeLatLng
 import com.htthinhus.gpstracker.models.VehicleState
 import com.htthinhus.gpstracker.databinding.FragmentInteractiveMapBinding
+import com.htthinhus.gpstracker.viewmodels.UserViewModel
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxMap
@@ -46,12 +51,12 @@ import java.util.TimeZone
 
 class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
+    private val userViewModel: UserViewModel by activityViewModels()
+
     private var firstTimeOpenFragment = true
     private var isMarkerInitialized = false
 
     private var vehicleState: VehicleState? = null
-
-
 
     private lateinit var mySharedPreferences: MySharedPreferences
 
@@ -75,6 +80,13 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         firstTimeOpenFragment = true
         isMarkerInitialized = false
         mySharedPreferences = MySharedPreferences(requireContext())
+        val navController = findNavController()
+
+        userViewModel.loginState.observe(viewLifecycleOwner, Observer { loginState ->
+            if (loginState == false) {
+                navController.navigate(R.id.loginFragment)
+            }
+        })
 
         setMapStyle()
 
@@ -91,7 +103,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         }
 
         binding.btnToLogin.setOnClickListener {
-            val navController = findNavController().navigate(R.id.loginFragment)
+            navController.navigate(R.id.loginFragment)
         }
     }
 
