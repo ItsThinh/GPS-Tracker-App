@@ -13,16 +13,16 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.graphics.scale
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.htthinhus.gpstracker.utils.MySharedPreferences
 import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.models.RealtimeLatLng
@@ -81,16 +81,18 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         isMarkerInitialized = false
         mySharedPreferences = MySharedPreferences(requireContext())
         val navController = findNavController()
+        val auth = Firebase.auth
 
         userViewModel.loginState.observe(viewLifecycleOwner, Observer { loginState ->
             if (loginState == false) {
+                mySharedPreferences.setDeviceId(null)
                 navController.navigate(R.id.loginFragment)
             }
         })
 
-        setMapStyle()
-
-        testGetFirestoreData()
+        if(mySharedPreferences.getDeviceId() != null) {
+            setupMap()
+        }
 
         binding.btnChangeMapMode.setOnClickListener {
             binding.mapView.mapboxMap.loadStyle(
@@ -107,7 +109,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         }
     }
 
-    private fun setMapStyle() {
+    private fun setupMap() {
         mapboxMap = binding.mapView.mapboxMap
 
         mapboxMap.loadStyle(

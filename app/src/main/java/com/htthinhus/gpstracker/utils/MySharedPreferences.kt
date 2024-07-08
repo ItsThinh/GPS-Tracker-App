@@ -2,7 +2,6 @@ package com.htthinhus.gpstracker.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import com.mapbox.maps.Style
 
 class MySharedPreferences(context: Context) {
@@ -10,6 +9,7 @@ class MySharedPreferences(context: Context) {
         context.getSharedPreferences("MySharedPreferences", Context.MODE_PRIVATE)
     private val keyFuelConsumption100km = "fuelConsumption100km"
     private val keyMapStyle = "mapStyle"
+    private val keyDeviceId = "deviceId"
 
     fun getFuelConsumption100km(): Int {
         return sharedPreferences.getInt(keyFuelConsumption100km, -1)
@@ -24,13 +24,21 @@ class MySharedPreferences(context: Context) {
     }
 
     fun setNewMapStyle(): String {
-        if (getMapStyle() == Style.OUTDOORS) {
+        return if (getMapStyle() == Style.OUTDOORS) {
             sharedPreferences.edit().putString(keyMapStyle, Style.SATELLITE_STREETS).apply()
-            return sharedPreferences.getString(keyMapStyle, Style.SATELLITE_STREETS)!!
+            sharedPreferences.getString(keyMapStyle, Style.SATELLITE_STREETS)!!
         } else {
             sharedPreferences.edit().putString(keyMapStyle, Style.OUTDOORS).apply()
-            return sharedPreferences.getString(keyMapStyle, Style.OUTDOORS)!!
+            sharedPreferences.getString(keyMapStyle, Style.OUTDOORS)!!
         }
+    }
+
+    fun getDeviceId(): String? {
+        return sharedPreferences.getString(keyDeviceId, null)
+    }
+
+    fun setDeviceId(deviceId: String?) {
+        sharedPreferences.edit().putString(keyDeviceId, deviceId).apply()
     }
 
 }

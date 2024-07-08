@@ -1,24 +1,36 @@
 package com.htthinhus.gpstracker.fragments
 
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.databinding.FragmentLoginBinding
+import com.htthinhus.gpstracker.utils.MySharedPreferences
 import com.htthinhus.gpstracker.viewmodels.UserViewModel
 
 class LoginFragment : Fragment() {
+
+    private var backPressedOnce = false
+    private val backPressHandler = android.os.Handler(Looper.getMainLooper())
+    private val backPressRunnable = Runnable {
+        backPressedOnce = false
+    }
+
+    private lateinit var mySharedPreferences: MySharedPreferences
 
     private val userViewModel: UserViewModel by activityViewModels()
     private lateinit var savedStateHandle: SavedStateHandle
@@ -35,30 +47,69 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        savedStateHandle =findNavController().previousBackStackEntry!!.savedStateHandle
+        savedStateHandle = findNavController().previousBackStackEntry!!.savedStateHandle
         savedStateHandle[LOGIN_SUCCESSFUL] = false
 
-        val emailEditText = binding.etEmail
-        val passwordEditText = binding.etPassword
+        mySharedPreferences = MySharedPreferences(requireContext())
 
         binding.btnLogIn.setOnClickListener {
-            val email = emailEditText.text.toString()
-            val password = passwordEditText.text.toString()
-            login(email, password)
+            login()
         }
 
         binding.tvToSignup.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signupFragment)
         }
+
+        setupBackPressBehavior()
     }
 
-    fun login(email: String, password: String) {
+    fun login() {
+        val auth = Firebase.auth
+
+        val emailEditText = binding.etEmail
+        val passwordEditText = binding.etPassword
+
+        val email = emailEditText.text.toString()
+        val password = passwordEditText.text.toString()
+
         userViewModel.login(email, password).observe(viewLifecycleOwner, Observer { result ->
             if (result) {
                 savedStateHandle[LOGIN_SUCCESSFUL] = true
-                findNavController().popBackStack()
+
+                if (mySharedPreferences.getDeviceId() == null) {
+                    val docRef = FirebaseFirestore.getInstance()
+                        .collection("devices")
+                        .whereEqualTo("userId", auth.currentUser!!.uid)
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            if(!documents.isEmpty){
+                                val document = documents.documents[0]
+                                if (document.exists()) {
+                                    val documentId = document.id
+                                    mySharedPreferences.setDeviceId(documentId)
+                                }
+                            }
+                            Log.d("LOGIN_FRAGMENT", "DeviceID: ${mySharedPreferences.getDeviceId()}")
+                            findNavController().popBackStack()
+                        }
+                }
+
             } else {
                 Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun setupBackPressBehavior() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (backPressedOnce) {
+                    requireActivity().finishAffinity()
+                } else {
+                    backPressedOnce = true
+                    Toast.makeText(context, "Press back again to exit", Toast.LENGTH_SHORT).show()
+                    backPressHandler.postDelayed(backPressRunnable, 2000)
+                }
             }
         })
     }

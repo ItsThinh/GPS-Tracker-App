@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
@@ -48,17 +49,38 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val auth = Firebase.auth
+
+        val navController = findNavController()
+
         userViewModel.loginState.observe(viewLifecycleOwner, Observer { loginState ->
             if(!loginState) {
                 findNavController().navigate(R.id.loginFragment)
+            } else {
+                binding.tvUserEmail.text = auth.currentUser!!.email
             }
         })
 
         binding.btnSignout.setOnClickListener {
             userViewModel.logout()
+            mySharedPreference.setDeviceId(null)
         }
 
         setUpSettings()
+
+
+        val currentBackStackEntry = navController.currentBackStackEntry!!
+        val savedStateHandle = currentBackStackEntry.savedStateHandle
+        savedStateHandle.getLiveData<Boolean>(LoginFragment.LOGIN_SUCCESSFUL)
+            .observe(viewLifecycleOwner, Observer { success ->
+                if (success != null && success) {
+                    val startDestination = navController.graph.startDestinationId
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(startDestination, true)
+                        .build()
+                    navController.navigate(startDestination, null, navOptions)
+                }
+            })
     }
 
     override fun onDestroyView() {
