@@ -25,9 +25,9 @@
     <PreferenceCategory>
         <EditTextPreference
             app:key="fuel"
-            app:title="Fuel Consmption"
+            app:title="Fuel Consumption"
             app:dialogMessage="Set new fuel value"
-            app:summary="Set the fuel consumption per 100km" />
+            app:summary="Enter the fuel consumption per 100km" />
     </PreferenceCategory>
 
 

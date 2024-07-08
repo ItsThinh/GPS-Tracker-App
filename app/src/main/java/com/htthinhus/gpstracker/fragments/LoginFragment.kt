@@ -31,9 +31,10 @@ class LoginFragment : Fragment() {
     }
 
     private lateinit var mySharedPreferences: MySharedPreferences
-
     private val userViewModel: UserViewModel by activityViewModels()
     private lateinit var savedStateHandle: SavedStateHandle
+
+    private val auth = Firebase.auth
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
@@ -68,7 +69,6 @@ class LoginFragment : Fragment() {
 
         val emailEditText = binding.etEmail
         val passwordEditText = binding.etPassword
-
         val email = emailEditText.text.toString()
         val password = passwordEditText.text.toString()
 
@@ -76,23 +76,25 @@ class LoginFragment : Fragment() {
             if (result) {
                 savedStateHandle[LOGIN_SUCCESSFUL] = true
 
-                if (mySharedPreferences.getDeviceId() == null) {
-                    val docRef = FirebaseFirestore.getInstance()
-                        .collection("devices")
-                        .whereEqualTo("userId", auth.currentUser!!.uid)
-                        .get()
-                        .addOnSuccessListener { documents ->
-                            if(!documents.isEmpty){
-                                val document = documents.documents[0]
-                                if (document.exists()) {
-                                    val documentId = document.id
-                                    mySharedPreferences.setDeviceId(documentId)
-                                }
+                getFuel()
+
+                sendTokenToFirestore()
+
+                // get GPS Device Id
+                FirebaseFirestore.getInstance()
+                    .collection("devices")
+                    .whereEqualTo("userId", auth.currentUser!!.uid)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        if(!documents.isEmpty){
+                            val document = documents.documents[0]
+                            if (document.exists()) {
+                                val documentId = document.id
+                                mySharedPreferences.setDeviceId(documentId)
                             }
-                            Log.d("LOGIN_FRAGMENT", "DeviceID: ${mySharedPreferences.getDeviceId()}")
-                            findNavController().popBackStack()
                         }
-                }
+                        findNavController().popBackStack()
+                    }
 
             } else {
                 Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
@@ -112,6 +114,49 @@ class LoginFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun getFuel() {
+
+        if (auth.currentUser != null) {
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(auth.currentUser!!.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val fuelValue = document.getLong("fuelConsumption100km")
+                        mySharedPreferences.setFuelConsumption100km(fuelValue?.toInt() ?: 0)
+                    }
+                }
+                .addOnFailureListener {
+                    Log.d("LOGIN_FRAGMENT", "Can't get fuel value: $it")
+                }
+        }
+    }
+
+    private fun sendTokenToFirestore() {
+
+        val token = mySharedPreferences.getToken()
+
+        if (auth.currentUser != null && token != null) {
+            val userId = auth.currentUser!!.uid
+
+            val firestoreRef = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .collection("fcmTokens")
+                .document(token)
+
+            firestoreRef.set(emptyMap<String, Any>())
+                .addOnSuccessListener {
+                    Log.d("SENDING_FCM_TOKEN", "Token sent")
+                }
+                .addOnFailureListener {
+                    Log.d("SENDING_FCM_TOKEN", it.toString())
+                }
+        }
+
     }
 
     override fun onDestroyView() {

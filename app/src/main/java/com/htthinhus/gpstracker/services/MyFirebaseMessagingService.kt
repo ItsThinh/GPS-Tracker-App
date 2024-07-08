@@ -1,7 +1,11 @@
 package com.htthinhus.gpstracker.services
 
 import android.Manifest
+import android.app.PendingIntent
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -10,45 +14,50 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.htthinhus.gpstracker.R
+import com.htthinhus.gpstracker.utils.MySharedPreferences
+import com.htthinhus.gpstracker.viewmodels.UserViewModel
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
+
+    private lateinit var mySharedPreferences: MySharedPreferences
+
+    override fun onCreate() {
+        super.onCreate()
+        mySharedPreferences = MySharedPreferences(applicationContext)
+    }
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        sendTokenToFirestore(token)
-        Log.d("SENDING_FCM_TOKEN", token)
+        mySharedPreferences.setToken(token)
     }
-
-    private fun sendTokenToFirestore(token: String) {
-
-        val USER_UID = "naw7Ba6apLNIstW0sm491NGXx3G2" // change to UID of authentication later
-        val firestoreRef = FirebaseFirestore.getInstance()
-            .collection("users")
-            .document(USER_UID)
-            .collection("fcmTokens")
-            .document(token)
-
-        firestoreRef.set(emptyMap<String, Any>())
-            .addOnSuccessListener {
-                Log.d("SENDING_FCM_TOKEN", "Token sent")
-            }
-            .addOnFailureListener {
-                Log.d("SENDING_FCM_TOKEN", it.toString())
-            }
-    }
-
+    
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        intent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val bitmapLargeIcon: Bitmap
+        val CHANNEL_ID = "CHANNEL_1"
+        var contentText: String
         val status:Boolean = message.data["status"].toBoolean()
 
-        val CHANNEL_ID = "CHANNEL_1"
-        val contentText = if (status) "VEHICLE TURN ON" else "VEHICLE TURN OFF"
+        if (status) {
+            contentText = "VEHICLE IS TURNED ON"
+            bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.vehicle_state_on)
+        } else {
+            contentText = "VEHICLE IS TURNED OFF"
+            bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.vehicle_state_off)
+        }
 
-        var notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_vehicle_status)
             .setContentTitle("VEHICLE STATUS")
             .setContentText(contentText)
+            .setLargeIcon(bitmapLargeIcon)
             .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
 
         val notificationManager = NotificationManagerCompat.from(this)
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)

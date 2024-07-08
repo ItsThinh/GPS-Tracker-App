@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        getFuel()
         setupBottomNavigationMenu()
         createNotificationChannel()
         userLoginStateObserve()
@@ -58,24 +57,6 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
         bottomNavigationView.setupWithNavController(navController)
-    }
-
-    private fun getFuel() {
-        val mySharedPreferences = MySharedPreferences(this)
-        if (mySharedPreferences.getFuelConsumption100km() == -1) {
-            val firestoreRef = FirebaseFirestore.getInstance()
-                .collection("devices")
-                .document("cf509abf-e231-43e0-a117-8b22bd25c7ed")
-                .get()
-                .addOnSuccessListener {
-                    if (it.exists()) {
-                        mySharedPreferences.setFuelConsumption100km(it.getLong("fuelConsumption100km")?.toInt() ?: 0)
-                    }
-                }
-                .addOnFailureListener {
-                    Log.d("FUEL", it.toString())
-                }
-        }
     }
 
     private fun createNotificationChannel() {

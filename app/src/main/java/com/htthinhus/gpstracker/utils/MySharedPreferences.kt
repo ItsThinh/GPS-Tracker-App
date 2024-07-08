@@ -7,9 +7,11 @@ import com.mapbox.maps.Style
 class MySharedPreferences(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("MySharedPreferences", Context.MODE_PRIVATE)
+
     private val keyFuelConsumption100km = "fuelConsumption100km"
     private val keyMapStyle = "mapStyle"
     private val keyDeviceId = "deviceId"
+    private val keyToken = "token"
 
     fun getFuelConsumption100km(): Int {
         return sharedPreferences.getInt(keyFuelConsumption100km, -1)
@@ -39,6 +41,14 @@ class MySharedPreferences(context: Context) {
 
     fun setDeviceId(deviceId: String?) {
         sharedPreferences.edit().putString(keyDeviceId, deviceId).apply()
+    }
+
+    fun setToken(token: String) {
+        sharedPreferences.edit().putString(keyToken, token).apply()
+    }
+
+    fun getToken(): String? {
+        return sharedPreferences.getString(keyToken, null)
     }
 
 }

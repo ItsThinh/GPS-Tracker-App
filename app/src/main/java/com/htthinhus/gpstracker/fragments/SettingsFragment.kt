@@ -18,6 +18,7 @@ import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.databinding.FragmentSettingsBinding
@@ -35,6 +36,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var fuelPreference: EditTextPreference
 
+    private val auth = Firebase.auth
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,8 +52,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val auth = Firebase.auth
-
         val navController = findNavController()
 
         userViewModel.loginState.observe(viewLifecycleOwner, Observer { loginState ->
@@ -58,8 +59,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 findNavController().navigate(R.id.loginFragment)
             } else {
                 binding.tvUserEmail.text = auth.currentUser!!.email
+                if (mySharedPreference.getDeviceId() != null) {
+                    binding.tvDeviceId.text = mySharedPreference.getDeviceId()
+                }
             }
         })
+
+        findPreference<EditTextPreference>("fuel")?.summary =
+            "Current value: ${mySharedPreference.getFuelConsumption100km()} L"
 
         binding.btnSignout.setOnClickListener {
             userViewModel.logout()
@@ -67,7 +74,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         setUpSettings()
-
 
         val currentBackStackEntry = navController.currentBackStackEntry!!
         val savedStateHandle = currentBackStackEntry.savedStateHandle
@@ -89,15 +95,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun setUpSettings() {
+
         findPreference<SwitchPreferenceCompat>("notifications")
-            ?.setOnPreferenceChangeListener { preference, newValue ->
+            ?.setOnPreferenceChangeListener { _, newValue ->
                 Toast.makeText(context, "Notifications enabled: $newValue", Toast.LENGTH_SHORT).show()
                 true
             }
 
         findPreference<Preference>("feedback")
             ?.setOnPreferenceClickListener {
-
                 val preference =
                     PreferenceManager.getDefaultSharedPreferences(requireContext()).all
                 preference.forEach {
@@ -108,18 +114,30 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
 
         findPreference<EditTextPreference>("fuel")
-            ?.setOnPreferenceChangeListener { preference, newValue ->
+            ?.setOnPreferenceChangeListener { _, newValue ->
+
                 val newValueString = newValue.toString().trim()
-                val newValueInt = newValueString.toIntOrNull()
-                if (newValueInt != null) {
-                    mySharedPreference.setFuelConsumption100km(newValue.toString().trim().toInt())
-                    fuelPreference.summary = mySharedPreference.getFuelConsumption100km().toString() + " L"
-                    fuelPreference.text = ""
+                val newFuelValueInt = newValueString.toIntOrNull()
+
+                if (newFuelValueInt != null) {
+                    fuelPreference.summary = "Current value: $newValueString L"
+                    addFuelToFirestore(newFuelValueInt)
                 } else {
                     Toast.makeText(context, "Please enter a valid integer number", Toast.LENGTH_SHORT).show()
                 }
 
                 true
+            }
+    }
+
+    private fun addFuelToFirestore(fuelValue: Int) {
+        val fuel = hashMapOf("fuelConsumption100km" to fuelValue)
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(auth.currentUser!!.uid)
+            .set(fuel)
+            .addOnSuccessListener {
+                mySharedPreference.setFuelConsumption100km(fuelValue)
             }
     }
 

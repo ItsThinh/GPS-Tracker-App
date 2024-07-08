@@ -99,14 +99,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 style(mySharedPreferences.setNewMapStyle()){}
             )
         }
-
-        binding.btnSetFuel.setOnClickListener {
-            showUpdateFuelValueDialog()
-        }
-
-        binding.btnToLogin.setOnClickListener {
-            navController.navigate(R.id.loginFragment)
-        }
     }
 
     private fun setupMap() {
@@ -128,37 +120,25 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         }
     }
 
-    private fun showUpdateFuelValueDialog() {
-        val editText = EditText(context)
-        editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER
-
-        AlertDialog.Builder(context)
-            .setTitle("Update fuel value")
-            .setMessage("Enter fuel consumption per 100 km")
-            .setView(editText)
-            .setPositiveButton("Enter") { dialog, which ->
-                val newFuelValue = editText.text.toString().toIntOrNull()
-                if (newFuelValue != null) {
-                    updateFuelValue(newFuelValue)
-                } else {
-                    editText.error = "Please enter a valid number"
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
-    private fun updateFuelValue(newFuelValue: Int) {
-
-
-        val firestoreRef = FirebaseFirestore.getInstance()
-            .collection("devices")
-            .document("cf509abf-e231-43e0-a117-8b22bd25c7ed")
-            .update("fuelConsumption100km", newFuelValue.toLong())
-            .addOnSuccessListener {
-                mySharedPreferences.setFuelConsumption100km(newFuelValue)
-            }
-    }
+//    private fun showUpdateFuelValueDialog() {
+//        val editText = EditText(context)
+//        editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+//
+//        AlertDialog.Builder(context)
+//            .setTitle("Update fuel value")
+//            .setMessage("Enter fuel consumption per 100 km")
+//            .setView(editText)
+//            .setPositiveButton("Enter") { dialog, which ->
+//                val newFuelValue = editText.text.toString().toIntOrNull()
+//                if (newFuelValue != null) {
+////                    updateFuelValue(newFuelValue)
+//                } else {
+//                    editText.error = "Please enter a valid number"
+//                }
+//            }
+//            .setNegativeButton("Cancel", null)
+//            .show()
+//    }
 
     private fun testGetFirestoreData() {
         val docRef = FirebaseFirestore.getInstance()
