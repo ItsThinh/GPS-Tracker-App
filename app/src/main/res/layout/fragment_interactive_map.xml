@@ -80,5 +80,22 @@
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="90dp" />
 
+    <Button
+        android:id="@+id/btnPlayback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="playback"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="160dp" />
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:layout_marginTop="32dp"
+        android:layout_gravity="center|top"/>
+
 
 </FrameLayout>

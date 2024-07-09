@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.SeekBar
 import androidx.core.graphics.scale
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -116,6 +117,40 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 startActivity(gMapIntent)
             }
         }
+
+        setupPlaybackFunctionTest()
+    }
+
+    private fun setupPlaybackFunctionTest() {
+
+        val coordinates: List<Point> = listOf(
+            Point.fromLngLat(107.101846, 10.358419),
+            Point.fromLngLat(107.10174918157263, 10.357923083757742),
+            Point.fromLngLat(107.10119099506574, 10.357268286320686),
+            Point.fromLngLat(107.10070807972313, 10.356793840747553),
+            Point.fromLngLat(107.10107286013488, 10.356160598047126),
+            Point.fromLngLat(107.10138399636841, 10.35588619247975),
+            Point.fromLngLat(107.1018238786296, 10.355464029599458),
+            Point.fromLngLat(107.10208137068493, 10.355337380624524),
+            Point.fromLngLat(107.1022959473977, 10.355611786672215),
+        )
+
+        binding.seekBar.max = coordinates.size - 1
+
+        binding.seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                updateMarker(coordinates[progress], 250)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+        })
     }
 
     private fun setupMap() {
@@ -306,7 +341,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         myGPSAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
     }
 
-    private fun updateMarker(currentPoint: Point) {
+    private fun updateMarker(currentPoint: Point, durationValue: Long = 3000) {
 
         animator?.let {
             if (it.isStarted) {
@@ -329,7 +364,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 myGPSAnnotation.point = it.animatedValue as Point
                 pointAnnotationManager.update(myGPSAnnotation)
             }
-            duration = 3000
+            duration = durationValue
             start()
         }
 

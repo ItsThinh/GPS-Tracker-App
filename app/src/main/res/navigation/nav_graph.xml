@@ -39,6 +39,9 @@
         <argument
             android:name="endTime"
             app:argType="long" />
+        <action
+            android:id="@+id/action_vehicleSessionDetailFragment_to_playbackFragment"
+            app:destination="@id/playbackFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -54,4 +57,9 @@
             android:id="@+id/action_signupFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/playbackFragment"
+        android:name="com.htthinhus.gpstracker.PlaybackFragment"
+        android:label="fragment_playback"
+        tools:layout="@layout/fragment_playback" />
 </navigation>
