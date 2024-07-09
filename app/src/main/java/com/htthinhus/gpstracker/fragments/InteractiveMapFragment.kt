@@ -3,7 +3,9 @@ package com.htthinhus.gpstracker.fragments
 import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -57,6 +59,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     private var isMarkerInitialized = false
 
     private var vehicleState: VehicleState? = null
+    private lateinit var currentPoint: Point
 
     private lateinit var mySharedPreferences: MySharedPreferences
 
@@ -98,6 +101,20 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             binding.mapView.mapboxMap.loadStyle(
                 style(mySharedPreferences.setNewMapStyle()){}
             )
+        }
+
+        binding.btnLaunchGoogleMaps.setOnClickListener {
+
+            val gMapUri =
+                Uri.parse("https://www.google.com/maps/dir/?api=1" +
+                        "&destination=${currentPoint.latitude()}" +
+                        ",+${currentPoint.longitude()}")
+
+            val gMapIntent = Intent(Intent.ACTION_VIEW, gMapUri)
+            gMapIntent.setPackage("com.google.android.apps.maps")
+            gMapIntent.resolveActivity(requireActivity().packageManager)?.let {
+                startActivity(gMapIntent)
+            }
         }
     }
 
@@ -208,7 +225,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val firebaseLatLng = snapshot.getValue(RealtimeLatLng::class.java)
-                    val currentPoint = Point.fromLngLat(
+                    currentPoint = Point.fromLngLat(
                         firebaseLatLng!!.longitude,
                         firebaseLatLng.latitude
                     )

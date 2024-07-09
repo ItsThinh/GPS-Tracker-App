@@ -62,11 +62,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="Change map style"
-        app:icon="@drawable/baseline_satellite_alt_24"
+        app:icon="@drawable/rounded_satellite_alt_24"
         app:iconSize="30dp"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="20dp"/>
+
+    <Button
+        android:id="@+id/btnLaunchGoogleMaps"
+        style="?attr/materialIconButtonFilledStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/sharp_navigation_24"
+        app:iconSize="30dp"
+        android:contentDescription="Launch Google Maps navigation to GPS location"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="90dp" />
 
 
 </FrameLayout>
