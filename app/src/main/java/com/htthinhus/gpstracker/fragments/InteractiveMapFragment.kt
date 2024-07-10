@@ -7,6 +7,8 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -71,6 +73,23 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     private lateinit var myGPSAnnotation: PointAnnotation
     private lateinit var pointAnnotationManager: PointAnnotationManager
 
+    private val handler: Handler = Handler(Looper.getMainLooper())
+    private var runnable: Runnable? = null
+    private var isForward = true
+    private var currentIndex: Int = 0
+
+    val coordinates: List<Point> = listOf(
+        Point.fromLngLat(107.101846, 10.358419),
+        Point.fromLngLat(107.10174918157263, 10.357923083757742),
+        Point.fromLngLat(107.10119099506574, 10.357268286320686),
+        Point.fromLngLat(107.10070807972313, 10.356793840747553),
+        Point.fromLngLat(107.10107286013488, 10.356160598047126),
+        Point.fromLngLat(107.10138399636841, 10.35588619247975),
+        Point.fromLngLat(107.1018238786296, 10.355464029599458),
+        Point.fromLngLat(107.10208137068493, 10.355337380624524),
+        Point.fromLngLat(107.1022959473977, 10.355611786672215),
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -118,22 +137,85 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             }
         }
 
-        setupPlaybackFunctionTest()
+
+        binding.btnPlayback.setOnClickListener {
+            startUpdatingMarker()
+        }
+    }
+
+    private fun startUpdatingMarker() {
+
+        binding.seekBar.max = coordinates.size - 1
+
+        runnable = object: Runnable {
+            override fun run() {
+
+
+                animator?.let {
+                    if (it.isStarted) {
+                        myGPSAnnotation.point = it.animatedValue as Point
+                        it.cancel()
+                    }
+                }
+
+                // Determine next index based on direction
+                if (isForward) {
+                    currentIndex++
+                    if (currentIndex >= coordinates.size) {
+                        currentIndex = 0 // Loop back to the beginning
+                    }
+                } else {
+                    currentIndex--
+                    if (currentIndex < 0) {
+                        currentIndex = coordinates.size - 1 // Loop to the end
+                    }
+                }
+
+                val pointEvaluator = TypeEvaluator<Point> { fraction, startValue, endValue ->
+                    Point.fromLngLat(
+                        startValue.longitude() + fraction * (endValue.longitude() - startValue.longitude()),
+                        startValue.latitude() + fraction * (endValue.latitude() - startValue.latitude())
+                    )
+                }
+
+                animator = ValueAnimator().apply {
+                    setObjectValues(myGPSAnnotation.point, coordinates[currentIndex])
+                    setEvaluator(pointEvaluator)
+                    addUpdateListener {
+                        myGPSAnnotation.point = it.animatedValue as Point
+                        pointAnnotationManager.update(myGPSAnnotation)
+                    }
+                    duration = 200
+                    start()
+                }
+
+                myGPSAnnotation.point = currentPoint
+
+                val cameraOptions = CameraOptions.Builder()
+                    .center(myGPSAnnotation.point)
+                    .zoom(15.0)
+                    .build()
+                binding.mapView.mapboxMap.easeTo(
+                    cameraOptions,
+                    MapAnimationOptions.mapAnimationOptions {
+                        duration(500)
+                    }
+                )
+
+                binding.seekBar.progress = currentIndex
+
+                handler.postDelayed(this, 3000)
+
+            }
+
+        }
+
+        handler.post(runnable!!)
     }
 
     private fun setupPlaybackFunctionTest() {
 
-        val coordinates: List<Point> = listOf(
-            Point.fromLngLat(107.101846, 10.358419),
-            Point.fromLngLat(107.10174918157263, 10.357923083757742),
-            Point.fromLngLat(107.10119099506574, 10.357268286320686),
-            Point.fromLngLat(107.10070807972313, 10.356793840747553),
-            Point.fromLngLat(107.10107286013488, 10.356160598047126),
-            Point.fromLngLat(107.10138399636841, 10.35588619247975),
-            Point.fromLngLat(107.1018238786296, 10.355464029599458),
-            Point.fromLngLat(107.10208137068493, 10.355337380624524),
-            Point.fromLngLat(107.1022959473977, 10.355611786672215),
-        )
+
 
         binding.seekBar.max = coordinates.size - 1
 
