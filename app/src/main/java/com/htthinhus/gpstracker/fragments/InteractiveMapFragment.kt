@@ -139,7 +139,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
 
         binding.btnPlayback.setOnClickListener {
-            startUpdatingMarker()
+            startUpdatingMarker2()
         }
     }
 
@@ -213,9 +213,49 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         handler.post(runnable!!)
     }
 
+    private fun startUpdatingMarker2() {
+        val seekBar = binding.seekBar
+        seekBar.max = coordinates.size - 1
+        seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    currentIndex = progress
+                    updateMarker(coordinates[currentIndex], 200)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                startUpdatingMarkerFollow2()
+            }
+
+        })
+
+        startUpdatingMarkerFollow2()
+
+
+    }
+
+    private fun startUpdatingMarkerFollow2() {
+        runnable = object: Runnable{
+            override fun run() {
+                currentIndex++
+                if (currentIndex >= coordinates.size) {
+                    currentIndex = 0
+                }
+
+                updateMarker(coordinates[currentIndex], 200)
+                binding.seekBar.progress = currentIndex
+
+                handler.postDelayed(this, 3000)
+            }
+        }
+        handler.post(runnable!!)
+    }
+
     private fun setupPlaybackFunctionTest() {
-
-
 
         binding.seekBar.max = coordinates.size - 1
 
