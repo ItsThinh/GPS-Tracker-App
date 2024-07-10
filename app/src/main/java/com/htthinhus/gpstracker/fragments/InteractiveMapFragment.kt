@@ -77,6 +77,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     private var runnable: Runnable? = null
     private var isForward = true
     private var currentIndex: Int = 0
+    private var isPlaybackRunning = true
 
     val coordinates: List<Point> = listOf(
         Point.fromLngLat(107.101846, 10.358419),
@@ -140,6 +141,9 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
         binding.btnPlayback.setOnClickListener {
             startUpdatingMarker2()
+        }
+        binding.btnControl.setOnClickListener {
+            tooglePlaybackControl()
         }
     }
 
@@ -232,10 +236,17 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             }
 
         })
-
         startUpdatingMarkerFollow2()
-
-
+    }
+    private fun tooglePlaybackControl() {
+        if (isPlaybackRunning) {
+            handler.removeCallbacks(runnable!!)
+            binding.btnControl.text = "Resume"
+        } else {
+            handler.post(runnable!!)
+            binding.btnControl.text = "Pause"
+        }
+        isPlaybackRunning = !isPlaybackRunning
     }
 
     private fun startUpdatingMarkerFollow2() {
@@ -246,10 +257,10 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                     currentIndex = 0
                 }
 
-                updateMarker(coordinates[currentIndex], 200)
+                updateMarker(coordinates[currentIndex], 0)
                 binding.seekBar.progress = currentIndex
 
-                handler.postDelayed(this, 3000)
+                handler.postDelayed(this, 200)
             }
         }
         handler.post(runnable!!)
