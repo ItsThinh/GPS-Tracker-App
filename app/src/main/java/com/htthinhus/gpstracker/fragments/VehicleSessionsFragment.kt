@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,9 +14,11 @@ import com.google.firebase.firestore.Query
 import com.htthinhus.gpstracker.adapters.VehicleSessionAdapter
 import com.htthinhus.gpstracker.databinding.FragmentVehicleSessionsBinding
 import com.htthinhus.gpstracker.models.VehicleSession
+import com.htthinhus.gpstracker.viewmodels.MainActivityViewModel
 
 class VehicleSessionsFragment : Fragment() {
     private var _binding: FragmentVehicleSessionsBinding? = null
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private val binding get() = _binding!!
 
     private lateinit var vehicleSessionList: ArrayList<VehicleSession>
@@ -31,6 +34,8 @@ class VehicleSessionsFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        mainActivityViewModel.showBottomNav()
 
         binding.rvVehicleSessions.layoutManager = LinearLayoutManager(context)
 

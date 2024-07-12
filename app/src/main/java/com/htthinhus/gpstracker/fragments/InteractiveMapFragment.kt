@@ -43,6 +43,7 @@ import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.layers.getLayer
+import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.extension.style.style
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.animation.easeTo
@@ -91,77 +92,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     private lateinit var myGPSAnnotation: PointAnnotation
     private lateinit var pointAnnotationManager: PointAnnotationManager
 
-    private val handler: Handler = Handler(Looper.getMainLooper())
-    private var runnable: Runnable? = null
-    private var isForward = true
-    private var currentIndex: Int = 0
-    private var isPlaybackRunning = true
-    private var previousProgress = 0
-
-    val coordinates: List<Point> = listOf(
-        Point.fromLngLat(107.101846, 10.358419),
-        Point.fromLngLat(107.10174918157263, 10.357923083757742),
-        Point.fromLngLat(107.10119099506574, 10.357268286320686),
-        Point.fromLngLat(107.10070807972313, 10.356793840747553),
-        Point.fromLngLat(107.10107286013488, 10.356160598047126),
-        Point.fromLngLat(107.10138399636841, 10.35588619247975),
-        Point.fromLngLat(107.1018238786296, 10.355464029599458),
-        Point.fromLngLat(107.10208137068493, 10.355337380624524),
-        Point.fromLngLat(107.1022959473977, 10.355611786672215),
-    )
-
-    //Polylines
-    private var polylineAnnotationManager: PolylineAnnotationManager? = null
-    private lateinit var annotationPlugin: AnnotationPlugin
-    val points = listOf(
-        Point.fromLngLat(107.101846, 10.358419),
-        Point.fromLngLat(107.10174918157263, 10.357923083757742),
-        Point.fromLngLat(107.10119099506574, 10.357268286320686),
-        Point.fromLngLat(107.10070807972313, 10.356793840747553),
-        Point.fromLngLat(107.10107286013488, 10.356160598047126),
-        Point.fromLngLat(107.10138399636841, 10.35588619247975),
-        Point.fromLngLat(107.1018238786296, 10.355464029599458),
-        Point.fromLngLat(107.10208137068493, 10.355337380624524),
-        Point.fromLngLat(107.1022959473977, 10.355611786672215),
-        //add more
-        Point.fromLngLat(107.10251052411047, 10.355886192947955),
-        Point.fromLngLat(107.10272510082324, 10.356160598995695),
-        Point.fromLngLat(107.10293967753601, 10.356435005043435),
-        Point.fromLngLat(107.10315425424878, 10.356709411091175),
-        Point.fromLngLat(107.10336883096155, 10.356983817138915),
-        Point.fromLngLat(107.10358340767432, 10.357258223186655),
-        Point.fromLngLat(107.10379798438709, 10.357532629234395),
-        Point.fromLngLat(107.10401256109986, 10.357807035282135),
-        Point.fromLngLat(107.10422713781263, 10.358081441329875),
-        Point.fromLngLat(107.1044417145254, 10.358355847377615),
-        Point.fromLngLat(107.10465629123817, 10.358630253425355),
-        Point.fromLngLat(107.10487086795094, 10.358904659473096),
-        Point.fromLngLat(107.10508544466371, 10.359179065520834),
-        Point.fromLngLat(107.10530002137648, 10.359453471568575),
-        Point.fromLngLat(107.10551459808925, 10.359727877616315),
-        Point.fromLngLat(107.10572917480202, 10.360002283664056),
-        Point.fromLngLat(107.10594375151479, 10.360276689711794),
-        Point.fromLngLat(107.10615832822756, 10.360551095759535),
-        Point.fromLngLat(107.10637290494033, 10.360825501807275),
-        Point.fromLngLat(107.1065874816531, 10.361099907855015)
-    )
-
-
-    private var currentPolylineIndex: Int = 0
-    private val polylineAnnotations = mutableListOf<PolylineAnnotation>()
-    val pointsList = listOf(
-        listOf(Point.fromLngLat(107.101846, 10.358419),Point.fromLngLat(107.10174918157263, 10.357923083757742)),
-        listOf(Point.fromLngLat(107.10174918157263, 10.357923083757742),Point.fromLngLat(107.10119099506574, 10.357268286320686)),
-        listOf(Point.fromLngLat(107.10119099506574, 10.357268286320686), Point.fromLngLat(107.10107286013488, 10.356160598047126)),
-        listOf(Point.fromLngLat(107.10107286013488, 10.356160598047126), Point.fromLngLat(107.10138399636841, 10.35588619247975)),
-        listOf(Point.fromLngLat(107.10138399636841, 10.35588619247975), Point.fromLngLat(107.1018238786296, 10.355464029599458)),
-        listOf(Point.fromLngLat(107.1018238786296, 10.355464029599458), Point.fromLngLat(107.10208137068493, 10.355337380624524)),
-        listOf(Point.fromLngLat(107.10208137068493, 10.355337380624524), Point.fromLngLat(107.1022959473977, 10.355611786672215)),
-    )
-
-    private val pointList2 = mutableListOf<Point>()
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -196,303 +126,9 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         }
 
         binding.btnLaunchGoogleMaps.setOnClickListener {
-            val gMapUri =
-                Uri.parse("https://www.google.com/maps/dir/?api=1" +
-                        "&destination=${currentPoint.latitude()}" +
-                        ",+${currentPoint.longitude()}")
-
-            val gMapIntent = Intent(Intent.ACTION_VIEW, gMapUri)
-            gMapIntent.setPackage("com.google.android.apps.maps")
-            gMapIntent.resolveActivity(requireActivity().packageManager)?.let {
-                startActivity(gMapIntent)
-            }
+            intentToGMap()
         }
 
-
-        binding.btnPlayback.setOnClickListener {
-            startUpdatingMarker2()
-        }
-        binding.btnControl.setOnClickListener {
-            tooglePlaybackControl()
-        }
-        binding.btnDrawPolylines.setOnClickListener {
-            addPolylines()
-        }
-
-
-        binding.mapView.mapboxMap.loadStyle(style(Style.OUTDOORS) {}) {
-            annotationPlugin = binding.mapView.annotations
-            polylineAnnotationManager = annotationPlugin.createPolylineAnnotationManager(
-                annotationConfig = AnnotationConfig("pitch_outline", "line_source", "line_layer")
-            )
-        }
-
-        currentPolylineIndex = 1
-        pointList2.add(coordinates[0])
-        binding.btnAdd.setOnClickListener {
-//            addPolyline()
-            addPoint()
-        }
-        binding.btnDelete.setOnClickListener {
-//            deletePolyline()
-            deleteLastPoint()
-        }
-    }
-
-    private fun addPoint() {
-        if(currentPolylineIndex < coordinates.size) {
-            pointList2.add(coordinates[currentPolylineIndex])
-            currentPolylineIndex++
-            updatePolyline()
-        } else {
-            Toast.makeText(context, "no more point to add", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun deleteLastPoint() {
-        if(pointList2.isNotEmpty()) {
-            pointList2.removeAt(pointList2.size - 1)
-            currentPolylineIndex--
-            updatePolyline()
-        }
-    }
-
-    private fun deleteLastPolyline() {
-        if (polylineAnnotations.isNotEmpty()) {
-            val lastPolyline = polylineAnnotations.removeAt(polylineAnnotations.size - 1)
-            polylineAnnotationManager?.delete(lastPolyline)
-            pointList2.removeAt(pointList2.size - 1)
-            currentPolylineIndex--
-        }
-    }
-
-    private fun updatePolyline() {
-        if(pointList2.size > 1){
-            val polylineAnnotationOptions = PolylineAnnotationOptions()
-                .withPoints(pointList2)
-                .withLineColor(Color.BLACK)
-                .withLineWidth(5.0)
-
-            val polylineAnnotation = polylineAnnotationManager?.create(polylineAnnotationOptions)
-            polylineAnnotation?.let {
-                polylineAnnotations.add(it)
-            }
-        }
-    }
-
-    private fun addPolyline() {
-        if (currentPolylineIndex < pointsList.size) {
-            val points = pointsList[currentPolylineIndex]
-            val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
-                .withPoints(points)
-                .withLineColor(Color.RED)
-                .withLineWidth(8.0)
-
-            val polylineAnnotation = polylineAnnotationManager?.create(polylineAnnotationOptions)
-            polylineAnnotation?.let {
-                polylineAnnotations.add(it)
-                currentPolylineIndex++
-            }
-        } else {
-            Toast.makeText(context, "No more polylines to add", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun deletePolyline() {
-        if (polylineAnnotations.isNotEmpty()) {
-            val polylineAnnotation = polylineAnnotations.removeAt(polylineAnnotations.size - 1)
-            polylineAnnotationManager?.delete(polylineAnnotation)
-            currentPolylineIndex--
-        } else {
-            Toast.makeText(context, "No polylines to delete", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun addPolylines() {
-
-        binding.mapView.mapboxMap.loadStyle(style(Style.OUTDOORS) {}) {
-            annotationPlugin = binding.mapView.annotations
-            polylineAnnotationManager = annotationPlugin.createPolylineAnnotationManager(
-                annotationConfig = AnnotationConfig("pitch_outline", "line_source", "line_layer")
-            ).apply {
-                it.getLayer(LAYER_ID)?.let { layer ->
-                    Toast.makeText(context, layer.layerId, Toast.LENGTH_SHORT).show()
-                }
-                addClickListener(
-                    OnPolylineAnnotationClickListener {
-                        Toast.makeText(context, "click ${it.id}", Toast.LENGTH_SHORT).show()
-                        false
-                    }
-                )
-
-                addInteractionListener(object: OnPolylineAnnotationInteractionListener{
-                    override fun onSelectAnnotation(annotation: PolylineAnnotation) {
-                        Toast.makeText(context, "onSelectAnnotation ${annotation.id}", Toast.LENGTH_SHORT).show()
-                    }
-
-                    override fun onDeselectAnnotation(annotation: PolylineAnnotation) {
-                        Toast.makeText(context, "onDeselectAnnotation ${annotation.id}", Toast.LENGTH_SHORT).show()
-                    }
-                })
-
-                val polylineAnnotationOptions = PolylineAnnotationOptions()
-                    .withPoints(points)
-                    .withLineColor(Color.RED)
-                    .withLineWidth(5.0)
-                create(polylineAnnotationOptions)
-
-            }
-        }
-    }
-
-    private fun startUpdatingMarker() {
-
-        binding.seekBar.max = coordinates.size - 1
-
-        runnable = object: Runnable {
-            override fun run() {
-
-
-                animator?.let {
-                    if (it.isStarted) {
-                        myGPSAnnotation.point = it.animatedValue as Point
-                        it.cancel()
-                    }
-                }
-
-                // Determine next index based on direction
-                if (isForward) {
-                    currentIndex++
-                    if (currentIndex >= coordinates.size) {
-                        currentIndex = 0 // Loop back to the beginning
-                    }
-                } else {
-                    currentIndex--
-                    if (currentIndex < 0) {
-                        currentIndex = coordinates.size - 1 // Loop to the end
-                    }
-                }
-
-                val pointEvaluator = TypeEvaluator<Point> { fraction, startValue, endValue ->
-                    Point.fromLngLat(
-                        startValue.longitude() + fraction * (endValue.longitude() - startValue.longitude()),
-                        startValue.latitude() + fraction * (endValue.latitude() - startValue.latitude())
-                    )
-                }
-
-                animator = ValueAnimator().apply {
-                    setObjectValues(myGPSAnnotation.point, coordinates[currentIndex])
-                    setEvaluator(pointEvaluator)
-                    addUpdateListener {
-                        myGPSAnnotation.point = it.animatedValue as Point
-                        pointAnnotationManager.update(myGPSAnnotation)
-                    }
-                    duration = 200
-                    start()
-                }
-
-                myGPSAnnotation.point = currentPoint
-
-                val cameraOptions = CameraOptions.Builder()
-                    .center(myGPSAnnotation.point)
-                    .zoom(15.0)
-                    .build()
-                binding.mapView.mapboxMap.easeTo(
-                    cameraOptions,
-                    MapAnimationOptions.mapAnimationOptions {
-                        duration(500)
-                    }
-                )
-
-                binding.seekBar.progress = currentIndex
-
-                handler.postDelayed(this, 3000)
-
-            }
-
-        }
-
-        handler.post(runnable!!)
-    }
-
-    private fun startUpdatingMarker2() {
-        val seekBar = binding.seekBar
-        seekBar.max = coordinates.size - 1
-        seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-//                if (fromUser) {
-                    currentIndex = progress
-                    updateMarker(coordinates[currentIndex], 0)
-                    if (progress > previousProgress) {
-                        addPoint()
-                        Toast.makeText(context, "Add called", Toast.LENGTH_SHORT).show()
-                    } else {
-                        deleteLastPoint()
-                        Toast.makeText(context, "Delete called", Toast.LENGTH_SHORT).show()
-                    }
-                    previousProgress = progress
-//                }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                handler.removeCallbacks(runnable!!)
-                isPlaybackRunning = false
-                binding.btnControl.text = "Remuse"
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-//                startUpdatingMarkerFollow2()
-            }
-
-        })
-        startUpdatingMarkerFollow2()
-    }
-    private fun tooglePlaybackControl() {
-        if (isPlaybackRunning) {
-            handler.removeCallbacks(runnable!!)
-            binding.btnControl.text = "Resume"
-        } else {
-            handler.post(runnable!!)
-            binding.btnControl.text = "Pause"
-        }
-        isPlaybackRunning = !isPlaybackRunning
-    }
-
-    private fun startUpdatingMarkerFollow2() {
-        runnable = object: Runnable{
-            override fun run() {
-                currentIndex++
-                if (currentIndex >= coordinates.size) {
-                    currentIndex = 0
-                }
-
-                updateMarker(coordinates[currentIndex], 0)
-                binding.seekBar.progress = currentIndex
-
-                handler.postDelayed(this, 3000)
-            }
-        }
-        handler.post(runnable!!)
-    }
-
-    private fun setupPlaybackFunctionTest() {
-
-        binding.seekBar.max = coordinates.size - 1
-
-        binding.seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                updateMarker(coordinates[progress], 250)
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-        })
     }
 
     private fun setupMap() {
@@ -513,26 +149,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             changeLockState()
         }
     }
-
-//    private fun showUpdateFuelValueDialog() {
-//        val editText = EditText(context)
-//        editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER
-//
-//        AlertDialog.Builder(context)
-//            .setTitle("Update fuel value")
-//            .setMessage("Enter fuel consumption per 100 km")
-//            .setView(editText)
-//            .setPositiveButton("Enter") { dialog, which ->
-//                val newFuelValue = editText.text.toString().toIntOrNull()
-//                if (newFuelValue != null) {
-////                    updateFuelValue(newFuelValue)
-//                } else {
-//                    editText.error = "Please enter a valid number"
-//                }
-//            }
-//            .setNegativeButton("Cancel", null)
-//            .show()
-//    }
 
     private fun testGetFirestoreData() {
         val docRef = FirebaseFirestore.getInstance()
@@ -559,37 +175,19 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             .addOnFailureListener { exception ->
                 Log.w("QUERY_TEST", "Error getting documents: ", exception)
             }
+    }
 
+    private fun intentToGMap() {
+        val gMapUri =
+            Uri.parse("https://www.google.com/maps/dir/?api=1" +
+                    "&destination=${currentPoint.latitude()}" +
+                    ",+${currentPoint.longitude()}")
 
-//        docRef.get()
-//            .addOnSuccessListener { documents ->
-//                if (documents != null) {
-//                    for (document in documents) {
-//                        Log.d("QUERY_TEST", "${document.id} => ${document.data}")
-//                    }
-//                } else {
-//                    Log.d("DOC_NAMES", "no such document")
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.d("DOC_NAMES", "get fail with $exception")
-//            }
-
-//        val usersRef = FirebaseFirestore.getInstance().collection("user")
-//        val query = usersRef.whereEqualTo("isActive", true)
-//        query.get()
-//            .addOnSuccessListener { documents ->
-//                if (documents.isEmpty) {
-//                    Log.d("QUERY_TEST", "No matching documents found.")
-//                } else {
-//                    for (document in documents) {
-//                        Log.d("QUERY_TEST", "${document.id} => ${document.data}")
-//                    }
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.w("QUERY_TEST", "Error getting documents: ", exception)
-//            }
+        val gMapIntent = Intent(Intent.ACTION_VIEW, gMapUri)
+        gMapIntent.setPackage("com.google.android.apps.maps")
+        gMapIntent.resolveActivity(requireActivity().packageManager)?.let {
+            startActivity(gMapIntent)
+        }
     }
 
     override fun onMapClick(point: Point): Boolean {
@@ -679,6 +277,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             .withIconImage(
                 bitmap.scale(50, 70)
             )
+            .withIconAnchor(IconAnchor.BOTTOM)
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
         myGPSAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
     }
@@ -727,9 +326,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
     companion object {
         private const val DEVICE_ID = "cf509abf-e231-43e0-a117-8b22bd25c7ed"
-        private const val LAYER_ID = "line_layer"
-        private const val SOURCE_ID = "line_source"
-        private const val PITCH_OUTLINE = "pitch-outline"
     }
 
 }

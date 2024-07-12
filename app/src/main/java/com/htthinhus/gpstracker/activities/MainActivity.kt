@@ -18,11 +18,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.htthinhus.gpstracker.utils.MySharedPreferences
 import com.htthinhus.gpstracker.R
+import com.htthinhus.gpstracker.viewmodels.MainActivityViewModel
 import com.htthinhus.gpstracker.viewmodels.UserViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNavigationView: BottomNavigationView
+    private val mainActivityViewModel: MainActivityViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigationMenu()
         createNotificationChannel()
         userLoginStateObserve()
+        bottomNavObserve()
     }
 
     private fun userLoginStateObserve() {
@@ -47,6 +50,12 @@ class MainActivity : AppCompatActivity() {
             } else {
                 bottomNavigationView.visibility = View.GONE
             }
+        })
+    }
+
+    private fun bottomNavObserve() {
+        mainActivityViewModel.isBottomNavVisible.observe(this, Observer { isVisible ->
+            bottomNavigationView.visibility = if (isVisible) View.VISIBLE else View.GONE
         })
     }
 

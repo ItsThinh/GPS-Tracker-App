@@ -6,14 +6,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.Query
 import com.htthinhus.gpstracker.R
+import com.htthinhus.gpstracker.activities.MainActivity
 import com.htthinhus.gpstracker.databinding.FragmentVehicleSessionDetailBinding
 import com.htthinhus.gpstracker.utils.MySharedPreferences
+import com.htthinhus.gpstracker.viewmodels.MainActivityViewModel
+import com.htthinhus.gpstracker.viewmodels.UserViewModel
 import com.mapbox.api.geocoding.v5.GeocodingCriteria
 import com.mapbox.api.geocoding.v5.MapboxGeocoding
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse
@@ -32,6 +37,7 @@ import java.util.TimeZone
 class VehicleSessionDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentVehicleSessionDetailBinding
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
 
     private val args: VehicleSessionDetailFragmentArgs by navArgs()
 
@@ -50,6 +56,9 @@ class VehicleSessionDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        mainActivityViewModel.hideBottomNav()
+
         startTimeSeconds = args.startTime
         endTimeSeconds = args.endTime
 
@@ -57,6 +66,14 @@ class VehicleSessionDetailFragment : Fragment() {
             setDetail()
         }
 
+        binding.btnPlayback.setOnClickListener {
+            val direction = VehicleSessionDetailFragmentDirections
+                .actionVehicleSessionDetailFragmentToPlaybackFragment(
+                    startTimeSeconds!!,
+                    endTimeSeconds!!
+                )
+            findNavController().navigate(direction)
+        }
     }
 
     private fun setDetail() {
@@ -73,7 +90,7 @@ class VehicleSessionDetailFragment : Fragment() {
 
         pointList = arrayListOf()
 
-        val firestoreRef = FirebaseFirestore.getInstance()
+        FirebaseFirestore.getInstance()
             .collection("devices")
             .document("cf509abf-e231-43e0-a117-8b22bd25c7ed")
             .collection("locations")
@@ -124,6 +141,7 @@ class VehicleSessionDetailFragment : Fragment() {
         return String.format("%02d:%02d:%02d", hour, minute, second)
     }
 
+    // Reverse geocoding from coordinate to place
     private fun setPlaces() {
         val reverseGeocodeStart = MapboxGeocoding.builder()
             .accessToken(getString(R.string.mapbox_downloads_token))

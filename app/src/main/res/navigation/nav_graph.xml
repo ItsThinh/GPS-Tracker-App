@@ -61,5 +61,14 @@
         android:id="@+id/playbackFragment"
         android:name="com.htthinhus.gpstracker.PlaybackFragment"
         android:label="fragment_playback"
-        tools:layout="@layout/fragment_playback" />
+        tools:layout="@layout/fragment_playback" >
+        <argument
+            android:name="startTime"
+            app:argType="long"
+            android:defaultValue="0L" />
+        <argument
+            android:name="endTime"
+            app:argType="long"
+            android:defaultValue="0L" />
+    </fragment>
 </navigation>

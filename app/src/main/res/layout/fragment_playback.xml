@@ -26,25 +26,36 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPlaybackControl"
+                style="?attr/materialIconButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:icon="@drawable/baseline_pause_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
             <SeekBar
+                android:id="@+id/seekBarPlayback"
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
-                tools:layout_editor_absoluteX="69dp"
-                tools:layout_editor_absoluteY="16dp" />
-
-            <com.google.android.material.slider.Slider
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                tools:layout_editor_absoluteX="168dp"
-                tools:layout_editor_absoluteY="26dp" />
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/btnPlaybackControl"
+                app:layout_constraintStart_toEndOf="@+id/btnPlaybackControl"
+                app:layout_constraintTop_toTopOf="@+id/btnPlaybackControl" />
 
             <TextView
                 android:id="@+id/tvDateTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="datetime timestamp"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="50dp" />
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="N/A"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
