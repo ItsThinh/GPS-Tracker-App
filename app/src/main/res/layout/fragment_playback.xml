@@ -53,9 +53,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="N/A"
+                android:text="____-__-__ __:__:__"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnPlaybackControl" />
+
+            <TextView
+                android:id="@+id/tvDistanceDriven"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 km"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tvDateTime"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvDateTime" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

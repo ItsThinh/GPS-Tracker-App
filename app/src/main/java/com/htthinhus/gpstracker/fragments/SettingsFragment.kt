@@ -75,6 +75,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         setUpSettings()
 
+        // navigate to map fragment if from login fragment navigate to this fragment
         val currentBackStackEntry = navController.currentBackStackEntry!!
         val savedStateHandle = currentBackStackEntry.savedStateHandle
         savedStateHandle.getLiveData<Boolean>(LoginFragment.LOGIN_SUCCESSFUL)
@@ -95,23 +96,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun setUpSettings() {
-
-        findPreference<SwitchPreferenceCompat>("notifications")
-            ?.setOnPreferenceChangeListener { _, newValue ->
-                Toast.makeText(context, "Notifications enabled: $newValue", Toast.LENGTH_SHORT).show()
-                true
-            }
-
-        findPreference<Preference>("feedback")
-            ?.setOnPreferenceClickListener {
-                val preference =
-                    PreferenceManager.getDefaultSharedPreferences(requireContext()).all
-                preference.forEach {
-                    Log.d("SETTINGS_PREFERENCE", "${it.key} -> ${it.value}")
-                }
-
-                true
-            }
 
         findPreference<EditTextPreference>("fuel")
             ?.setOnPreferenceChangeListener { _, newValue ->

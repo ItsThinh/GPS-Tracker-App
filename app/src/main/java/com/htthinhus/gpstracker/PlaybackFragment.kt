@@ -42,8 +42,11 @@ import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManager
+import com.mapbox.turf.TurfConstants
+import com.mapbox.turf.TurfMeasurement
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import java.util.TimeZone
 
 class PlaybackFragment : Fragment() {
@@ -76,6 +79,7 @@ class PlaybackFragment : Fragment() {
 
     private var isPlaybackRunning = true
     private var isDonePlayback = false
+    private var distanceDriven: Double = 0.0
 
 
     override fun onCreateView(
@@ -186,19 +190,31 @@ class PlaybackFragment : Fragment() {
                 updateMarker(pointList[currentIndex], 0)
                 if (progress > previousProgress) {
                     addPoint()
+                    if (previousProgress >= 0) {
+                        distanceDriven += TurfMeasurement.distance(pointList[previousProgress], pointList[progress], TurfConstants.UNIT_KILOMETERS)
+                        val formattedStringDistanceDriven = String.format(Locale.ENGLISH, "%.3f", distanceDriven) + " km"
+                        binding.tvDistanceDriven.text = formattedStringDistanceDriven
+                    }
                 } else {
                     deleteLastPoint()
+                    if (previousProgress > 0) {
+                        distanceDriven -= TurfMeasurement.distance(pointList[progress], pointList[previousProgress], TurfConstants.UNIT_KILOMETERS)
+                        val formattedStringDistanceDriven = String.format(Locale.ENGLISH, "%.3f", distanceDriven) + " km"
+                        binding.tvDistanceDriven.text = formattedStringDistanceDriven
+                    }
                 }
                 previousProgress = progress
 
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                 dateFormat.timeZone = TimeZone.getTimeZone("GMT+7")
                 binding.tvDateTime.text = dateFormat.format(Date(timestampSecondList[currentIndex]*1000))
+
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 handler.removeCallbacks(runnable!!)
                 isPlaybackRunning = false
+                isDonePlayback = false
                 binding.btnPlaybackControl.setIconResource(R.drawable.baseline_play_arrow_24)
             }
 
@@ -209,6 +225,7 @@ class PlaybackFragment : Fragment() {
     }
 
     private fun addPoint() {
+
         if(currentIndexPolylinePoint < pointList.size) {
             pointListPolyline.add(pointList[currentIndexPolylinePoint])
             currentIndexPolylinePoint++
@@ -246,6 +263,12 @@ class PlaybackFragment : Fragment() {
     private fun startUpdatingMarker() {
         runnable = object: Runnable{
             override fun run() {
+
+                updateMarker(pointList[currentIndex], 0)
+                binding.seekBarPlayback.progress = currentIndex
+                handler.postDelayed(this, 1000)
+                currentIndex++
+
                 if (currentIndex >= pointList.size) {
                     handler.removeCallbacks(runnable!!)
                     binding.btnPlaybackControl.setIconResource(R.drawable.baseline_play_arrow_24)
@@ -253,10 +276,6 @@ class PlaybackFragment : Fragment() {
                     isDonePlayback = true
                     return
                 }
-                updateMarker(pointList[currentIndex], 0)
-                binding.seekBarPlayback.progress = currentIndex
-                handler.postDelayed(this, 1000)
-                currentIndex++
             }
         }
         handler.post(runnable!!)
@@ -319,6 +338,7 @@ class PlaybackFragment : Fragment() {
         binding.seekBarPlayback.progress = 0
         currentIndex = 0
         currentIndexPolylinePoint = 1
+        distanceDriven = 0.0
         pointListPolyline.clear()
         pointListPolyline.add(pointList[0])
         polylineAnnotationManager!!.deleteAll()
