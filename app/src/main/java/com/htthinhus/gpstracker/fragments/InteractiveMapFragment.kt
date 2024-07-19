@@ -115,8 +115,14 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             }
         })
 
+        // setup View visibility
         if(mySharedPreferences.getDeviceId() != null) {
             setupMap()
+        } else {
+            binding.mapView.visibility = View.GONE
+            binding.btnChangeMapMode.visibility = View.GONE
+            binding.btnLaunchGoogleMaps.visibility = View.GONE
+            binding.cvVehicleStatus.visibility = View.GONE
         }
 
         binding.btnChangeMapMode.setOnClickListener {

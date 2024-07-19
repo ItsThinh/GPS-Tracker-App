@@ -98,7 +98,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun setUpSettings() {
 
         findPreference<EditTextPreference>("fuel")
-            ?.setOnPreferenceChangeListener { _, newValue ->
+            ?.setOnPreferenceChangeListener { preference, newValue ->
 
                 val newValueString = newValue.toString().trim()
                 val newFuelValueInt = newValueString.toIntOrNull()
@@ -109,7 +109,30 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 } else {
                     Toast.makeText(context, "Please enter a valid integer number", Toast.LENGTH_SHORT).show()
                 }
+                true
+            }
 
+        findPreference<EditTextPreference>("deviceId")
+            ?.setOnPreferenceChangeListener { preference, newValue ->
+                val newDeviceIdString = newValue.toString().trim()
+                FirebaseFirestore.getInstance().collection("devices").document(newDeviceIdString)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document.exists()) {
+                            mySharedPreference.setDeviceId(newDeviceIdString)
+
+                            val userId = hashMapOf("userId" to auth.currentUser!!.uid)
+                            FirebaseFirestore.getInstance().collection("devices").document(newDeviceIdString)
+                                .set(userId)
+                                .addOnSuccessListener { Toast.makeText(context, "Device ID is added", Toast.LENGTH_SHORT).show() }
+                                .addOnFailureListener { Toast.makeText(context, "Failed to add device ID, try again later", Toast.LENGTH_SHORT).show() }
+                        } else {
+                            Toast.makeText(context, "Device ID is not exist", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Failed to connect, try again later", Toast.LENGTH_SHORT).show()
+                    }
                 true
             }
     }

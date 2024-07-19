@@ -4,7 +4,12 @@
     <EditTextPreference
         app:key="fuel"
         app:title="Fuel Consumption"
-        app:dialogMessage="Set new fuel value"
-        app:summary="Enter the fuel consumption per 100km" />
+        app:dialogMessage="Enter the fuel consumption per 100km"
+        app:icon="@drawable/outline_gas_meter_24" />
+    <EditTextPreference
+        app:key="deviceId"
+        app:title="Device ID"
+        app:summary="Enter device ID and start tracking"
+        app:icon="@drawable/baseline_device_hub_24" />
 
 </PreferenceScreen>
