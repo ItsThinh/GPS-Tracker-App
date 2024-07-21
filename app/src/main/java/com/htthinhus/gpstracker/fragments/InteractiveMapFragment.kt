@@ -23,6 +23,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -31,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.htthinhus.gpstracker.utils.MySharedPreferences
 import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.models.RealtimeLatLng
@@ -134,6 +136,15 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         binding.btnLaunchGoogleMaps.setOnClickListener {
             intentToGMap()
         }
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FCM_TOKEN", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            } else {
+                Log.w("FCM_TOKEN", task.result)
+            }
+        })
 
     }
 

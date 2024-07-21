@@ -39,20 +39,29 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
         val bitmapLargeIcon: Bitmap
         val CHANNEL_ID = "CHANNEL_1"
+        var contextTitle = "VEHICLE STATUS"
         var contentText: String
-        val status:Boolean = message.data["status"].toBoolean()
+        val content:String = message.data["content"]!!
 
-        if (status) {
+        if (content == "turnOn") {
             contentText = "VEHICLE IS TURNED ON"
             bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.vehicle_state_on)
-        } else {
+        } else if (content == "turnOff") {
             contentText = "VEHICLE IS TURNED OFF"
             bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.vehicle_state_off)
+        } else if (content == "unauthorizedUnlock") {
+            contextTitle = "WARNING"
+            contentText = "UNAUTHORIZED VEHICLE UNLOCKING"
+            bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.ic_arlet)
+        } else {
+            contextTitle = "WARNING"
+            contentText = "MAIN POWER DISCONNECTED"
+            bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.ic_arlet)
         }
 
         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_vehicle_status)
-            .setContentTitle("VEHICLE STATUS")
+            .setContentTitle(contextTitle)
             .setContentText(contentText)
             .setLargeIcon(bitmapLargeIcon)
             .setPriority(NotificationCompat.PRIORITY_MAX)
