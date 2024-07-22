@@ -8,7 +8,7 @@
         android:icon="@drawable/sharp_globe_24"/>
     <item
         android:id="@+id/vehicleSessionsFragment"
-        android:title="Sessions"
+        android:title="Review"
         android:icon="@drawable/sharp_list_alt_24"/>
     <item
         android:id="@+id/settingsFragment"

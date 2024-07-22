@@ -79,6 +79,8 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
     private val userViewModel: UserViewModel by activityViewModels()
 
+    private var DEVICE_ID: String? = null
+
     private var firstTimeOpenFragment = true
     private var isMarkerInitialized = false
 
@@ -99,6 +101,8 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentInteractiveMapBinding.inflate(inflater, container, false)
+        mySharedPreferences = MySharedPreferences(requireContext())
+        DEVICE_ID = mySharedPreferences.getDeviceId()
         return binding.root
     }
 
@@ -106,7 +110,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         super.onViewCreated(view, savedInstanceState)
         firstTimeOpenFragment = true
         isMarkerInitialized = false
-        mySharedPreferences = MySharedPreferences(requireContext())
+
         val navController = findNavController()
         val auth = Firebase.auth
 
@@ -118,7 +122,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         })
 
         // setup View visibility
-        if(mySharedPreferences.getDeviceId() != null) {
+        if(DEVICE_ID != null) {
             setupMap()
         } else {
             binding.mapView.visibility = View.GONE
@@ -145,6 +149,10 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 Log.w("FCM_TOKEN", task.result)
             }
         })
+
+        binding.btnToDatePicker.setOnClickListener {
+            findNavController().navigate(R.id.action_interactiveMapFragment_to_picktimeFragment)
+        }
 
     }
 
@@ -212,7 +220,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     }
 
     private fun getRealtimeLocation() {
-        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID).child("location")
+        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("location")
         firebaseRef.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
@@ -252,7 +260,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     }
 
     private fun getVehicleStatus() {
-        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID).child("vehicleState")
+        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("vehicleState")
         firebaseRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
@@ -280,9 +288,19 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     }
 
     private fun changeLockState() {
-        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID).child("vehicleState").child("locked")
+        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("vehicleState")
         if (vehicleState != null) {
-            firebaseRef.setValue(!vehicleState!!.locked)
+            val updates = mapOf<String, Boolean>(
+                "locked" to true,
+                "status" to false
+            )
+            firebaseRef.updateChildren(updates).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("UPDATE_LOCKED", "Update successful")
+                } else {
+                    Log.e("UPDATE_LOCKED", "Update failed", task.exception)
+                }
+            }
         }
     }
 
@@ -339,10 +357,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
             }
         )
 
-    }
-
-    companion object {
-        private const val DEVICE_ID = "cf509abf-e231-43e0-a117-8b22bd25c7ed"
     }
 
 }

@@ -45,6 +45,7 @@ class VehicleSessionDetailFragment : Fragment() {
     private var endTimeSeconds: Long? = null
 
     private lateinit var pointList: ArrayList<Point>
+    private lateinit var timestampList: ArrayList<Long>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,18 +78,9 @@ class VehicleSessionDetailFragment : Fragment() {
     }
 
     private fun setDetail() {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        dateFormat.timeZone = TimeZone.getTimeZone("GMT+7")
-        val startTime = dateFormat.format(Date(startTimeSeconds!!*1000))
-        val endTime = dateFormat.format(Date(endTimeSeconds!!*1000))
-
-        val drivingTimeSeconds = endTimeSeconds!! - startTimeSeconds!!
-
-        binding.tvStartTime.text = startTime
-        binding.tvEndTime.text = endTime
-        binding.tvDrivingTime.text = formatSecondsToHHMMSS(drivingTimeSeconds)
 
         pointList = arrayListOf()
+        timestampList = arrayListOf()
 
         FirebaseFirestore.getInstance()
             .collection("devices")
@@ -104,6 +96,10 @@ class VehicleSessionDetailFragment : Fragment() {
                         val geoPoint = document.get("location") as GeoPoint
                         val point = Point.fromLngLat(geoPoint.longitude, geoPoint.latitude)
                         pointList.add(point)
+
+                        val timestamp = document.get("timestamp") as Timestamp
+                        val timestampSecond = timestamp.seconds
+                        timestampList.add(timestampSecond)
                     }
                 }
                 Log.d("TEST_POINT_LIST", "Point List: $pointList")
@@ -128,6 +124,20 @@ class VehicleSessionDetailFragment : Fragment() {
                     val formattedStringLastLocation = "${pointList[pointList.size - 1].latitude()}, ${pointList[pointList.size - 1].longitude()}"
                     binding.tvFirstLocation.text = formattedStringFirstLocation
                     binding.tvLastLocation.text = formattedStringLastLocation
+
+
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                    dateFormat.timeZone = TimeZone.getTimeZone("GMT+7")
+                    val startDateTime = timestampList[0]
+                    val endDateTime = timestampList[timestampList.size - 1]
+                    val startTime = dateFormat.format(Date(startDateTime*1000))
+                    val endTime = dateFormat.format(Date(endDateTime*1000))
+
+                    val drivingTimeSeconds = startDateTime - endDateTime
+
+                    binding.tvStartTime.text = startTime
+                    binding.tvEndTime.text = endTime
+                    binding.tvDrivingTime.text = formatSecondsToHHMMSS(drivingTimeSeconds)
 
                     setPlaces()
                 }

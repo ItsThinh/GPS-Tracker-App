@@ -80,4 +80,16 @@
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="90dp" />
 
+    <Button
+        android:id="@+id/btnToDatePicker"
+        style="?attr/materialIconButtonFilledStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/sharp_navigation_24"
+        app:iconSize="30dp"
+        android:contentDescription="Navigate to picker fragment"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="160dp" />
+
 </FrameLayout>

@@ -18,7 +18,11 @@
         android:id="@+id/interactiveMapFragment"
         android:name="com.htthinhus.gpstracker.fragments.InteractiveMapFragment"
         android:label="fragment_interactive_map"
-        tools:layout="@layout/fragment_interactive_map" />
+        tools:layout="@layout/fragment_interactive_map" >
+        <action
+            android:id="@+id/action_interactiveMapFragment_to_picktimeFragment"
+            app:destination="@id/picktimeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/vehicleSessionsFragment"
         android:name="com.htthinhus.gpstracker.fragments.VehicleSessionsFragment"
@@ -70,5 +74,14 @@
             android:name="endTime"
             app:argType="long"
             android:defaultValue="0L" />
+    </fragment>
+    <fragment
+        android:id="@+id/picktimeFragment"
+        android:name="com.htthinhus.gpstracker.PicktimeFragment"
+        android:label="fragment_picktime"
+        tools:layout="@layout/fragment_picktime" >
+        <action
+            android:id="@+id/action_picktimeFragment_to_vehicleSessionDetailFragment"
+            app:destination="@id/vehicleSessionDetailFragment" />
     </fragment>
 </navigation>
