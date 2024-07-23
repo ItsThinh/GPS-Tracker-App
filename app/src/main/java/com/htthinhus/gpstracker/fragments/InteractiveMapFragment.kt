@@ -112,7 +112,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         isMarkerInitialized = false
 
         val navController = findNavController()
-        val auth = Firebase.auth
 
         userViewModel.loginState.observe(viewLifecycleOwner, Observer { loginState ->
             if (loginState == false) {
@@ -224,11 +223,13 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         firebaseRef.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    val firebaseLatLng = snapshot.getValue(RealtimeLatLng::class.java)
+                    val data = snapshot.getValue(RealtimeLatLng::class.java)
                     currentPoint = Point.fromLngLat(
-                        firebaseLatLng!!.longitude,
-                        firebaseLatLng.latitude
+                        data!!.longitude,
+                        data.latitude
                     )
+                    val dataSpeedString = String.format(Locale.US, "%.2f", data.speed) + " kmph"
+                    binding.tvSpeed.text = dataSpeedString
                     if (isMarkerInitialized) {
                         updateMarker(currentPoint)
                     } else {
@@ -290,16 +291,21 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     private fun changeLockState() {
         val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("vehicleState")
         if (vehicleState != null) {
-            val updates = mapOf<String, Boolean>(
-                "locked" to true,
-                "status" to false
-            )
-            firebaseRef.updateChildren(updates).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("UPDATE_LOCKED", "Update successful")
-                } else {
-                    Log.e("UPDATE_LOCKED", "Update failed", task.exception)
+            if (!vehicleState!!.locked == true){
+                val updates = mapOf<String, Boolean>(
+                    "locked" to !vehicleState!!.locked,
+                    "status" to false
+                )
+                firebaseRef.updateChildren(updates).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("UPDATE_LOCKED", "Update successful")
+                    } else {
+                        Log.e("UPDATE_LOCKED", "Update failed", task.exception)
+                    }
                 }
+            } else {
+                FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("vehicleState")
+                    .child("locked").setValue(!vehicleState!!.locked)
             }
         }
     }

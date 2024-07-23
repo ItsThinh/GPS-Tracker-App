@@ -12,6 +12,51 @@
         android:layout_height="match_parent" />
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="70dp"
+        app:contentPadding="8dp"
+        app:strokeWidth="3dp"
+        app:strokeColor="@color/black">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SPEED:"
+                android:textAllCaps="true"
+                android:textColor="#0090FF"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="0 kmph"
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textView19"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/textView19" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvVehicleStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -90,6 +135,7 @@
         android:contentDescription="Navigate to picker fragment"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="15dp"
-        android:layout_marginBottom="160dp" />
+        android:layout_marginBottom="160dp"
+        android:visibility="gone"/>
 
 </FrameLayout>
