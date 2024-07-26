@@ -133,7 +133,7 @@ class VehicleSessionDetailFragment : Fragment() {
                     val startTime = dateFormat.format(Date(startDateTime*1000))
                     val endTime = dateFormat.format(Date(endDateTime*1000))
 
-                    val drivingTimeSeconds = startDateTime - endDateTime
+                    val drivingTimeSeconds = endDateTime - startDateTime
 
                     binding.tvStartTime.text = startTime
                     binding.tvEndTime.text = endTime

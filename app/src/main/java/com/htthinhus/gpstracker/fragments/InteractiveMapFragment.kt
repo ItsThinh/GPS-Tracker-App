@@ -148,11 +148,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 Log.w("FCM_TOKEN", task.result)
             }
         })
-
-        binding.btnToDatePicker.setOnClickListener {
-            findNavController().navigate(R.id.action_interactiveMapFragment_to_picktimeFragment)
-        }
-
     }
 
     private fun setupMap() {
