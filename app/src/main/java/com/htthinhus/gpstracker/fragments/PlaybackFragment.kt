@@ -1,4 +1,4 @@
-package com.htthinhus.gpstracker
+package com.htthinhus.gpstracker.fragments
 
 import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
@@ -21,6 +21,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.Query
+import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.activities.MainActivity
 import com.htthinhus.gpstracker.databinding.FragmentPlaybackBinding
 import com.htthinhus.gpstracker.viewmodels.MainActivityViewModel

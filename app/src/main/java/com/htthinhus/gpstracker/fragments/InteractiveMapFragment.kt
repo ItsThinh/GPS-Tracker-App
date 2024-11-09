@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.Toast
@@ -38,6 +39,7 @@ import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.models.RealtimeLatLng
 import com.htthinhus.gpstracker.models.VehicleState
 import com.htthinhus.gpstracker.databinding.FragmentInteractiveMapBinding
+import com.htthinhus.gpstracker.models.FuelData
 import com.htthinhus.gpstracker.viewmodels.UserViewModel
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
@@ -148,6 +150,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 Log.w("FCM_TOKEN", task.result)
             }
         })
+
     }
 
     private fun setupMap() {
@@ -164,6 +167,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         }
         getRealtimeLocation()
         getVehicleStatus()
+        getFuelData()
         binding.cvVehicleStatus.setOnClickListener {
             changeLockState()
         }
@@ -283,10 +287,33 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         })
     }
 
+    private fun getFuelData() {
+        val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("fuelData")
+        firebaseRef.addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val data = snapshot.getValue(FuelData::class.java)
+
+                    val fuelDataString = String.format(Locale.US, "%.2f", data!!.currentFuelLevel) + "L"
+                    binding.tvCurrentFuelLevel.text = fuelDataString
+
+                    val height = binding.fuelTankFrame.height
+
+                    val percentage = data.currentFuelLevel/data.tankCapacity
+                    binding.progressFill.layoutParams.height = (height * percentage).toInt()
+                    binding.progressFill.requestLayout()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
+
     private fun changeLockState() {
         val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("vehicleState")
         if (vehicleState != null) {
-            if (!vehicleState!!.locked == true){
+            if (!vehicleState!!.locked){
                 val updates = mapOf<String, Boolean>(
                     "locked" to !vehicleState!!.locked,
                     "status" to false

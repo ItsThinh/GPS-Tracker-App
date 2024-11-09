@@ -6,4 +6,9 @@
     </style>
 
     <style name="Theme.GPSTracker" parent="Base.Theme.GPSTracker" />
+
+    <style name="ThemeMaterialCalendar" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="android:windowFullscreen">false</item>
+    </style>
+
 </resources>

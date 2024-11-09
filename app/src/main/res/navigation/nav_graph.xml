@@ -18,7 +18,11 @@
         android:id="@+id/interactiveMapFragment"
         android:name="com.htthinhus.gpstracker.fragments.InteractiveMapFragment"
         android:label="fragment_interactive_map"
-        tools:layout="@layout/fragment_interactive_map" />
+        tools:layout="@layout/fragment_interactive_map" >
+        <action
+            android:id="@+id/action_interactiveMapFragment_to_picktimeFragment"
+            app:destination="@id/picktimeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/vehicleSessionsFragment"
         android:name="com.htthinhus.gpstracker.fragments.VehicleSessionsFragment"
@@ -27,6 +31,9 @@
         <action
             android:id="@+id/action_vehicleSessionsFragment_to_vehicleSessionDetailFragment"
             app:destination="@id/vehicleSessionDetailFragment" />
+        <action
+            android:id="@+id/action_vehicleSessionsFragment_to_dateRangePickerFragment"
+            app:destination="@id/dateRangePickerFragment" />
     </fragment>
     <fragment
         android:id="@+id/vehicleSessionDetailFragment"
@@ -59,7 +66,7 @@
     </fragment>
     <fragment
         android:id="@+id/playbackFragment"
-        android:name="com.htthinhus.gpstracker.PlaybackFragment"
+        android:name="com.htthinhus.gpstracker.fragments.PlaybackFragment"
         android:label="fragment_playback"
         tools:layout="@layout/fragment_playback" >
         <argument
@@ -70,5 +77,19 @@
             android:name="endTime"
             app:argType="long"
             android:defaultValue="0L" />
+    </fragment>
+    <fragment
+        android:id="@+id/picktimeFragment"
+        android:name="com.htthinhus.gpstracker.PicktimeFragment"
+        android:label="fragment_picktime"
+        tools:layout="@layout/fragment_picktime" />
+    <fragment
+        android:id="@+id/dateRangePickerFragment"
+        android:name="com.htthinhus.gpstracker.fragments.DateRangePickerFragment"
+        android:label="fragment_date_range_picker"
+        tools:layout="@layout/fragment_date_range_picker" >
+        <action
+            android:id="@+id/action_dateRangePickerFragment_to_vehicleSessionDetailFragment"
+            app:destination="@id/vehicleSessionDetailFragment" />
     </fragment>
 </navigation>

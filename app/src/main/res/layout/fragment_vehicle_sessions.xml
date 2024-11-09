@@ -1,14 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.VehicleSessionsFragment">
+    android:orientation="vertical"
+    tools:context=".fragments.VehicleSessionsFragment"
+    android:background="#BDD7FF">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvVehicleSessions"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#BDD7FF"
-        tools:listitem="@layout/item_vehicle_session"/>
-</FrameLayout>
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/cvPickTime"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_vehicle_session" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvPickTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        app:cardBackgroundColor="#8CADFF"
+        app:strokeColor="#000000"
+        app:strokeWidth="2dp"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="16dp">
+
+            <Button
+                android:id="@+id/btnSelectTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="select time"
+                android:textSize="20dp"
+                android:textAllCaps="true"
+                android:backgroundTint="#000000" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

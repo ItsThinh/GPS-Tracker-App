@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.htthinhus.gpstracker.R
 import com.htthinhus.gpstracker.adapters.VehicleSessionAdapter
 import com.htthinhus.gpstracker.databinding.FragmentVehicleSessionsBinding
 import com.htthinhus.gpstracker.models.VehicleSession
@@ -71,8 +72,8 @@ class VehicleSessionsFragment : Fragment() {
                 Log.w("VEHICLE_SESSIONS", exception)
             }
 
-
-
+        binding.btnSelectTime.setOnClickListener {
+            findNavController().navigate(R.id.action_vehicleSessionsFragment_to_dateRangePickerFragment)
+        }
     }
-
 }
