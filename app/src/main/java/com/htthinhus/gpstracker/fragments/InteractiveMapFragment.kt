@@ -3,9 +3,11 @@ package com.htthinhus.gpstracker.fragments
 import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -16,8 +18,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.SeekBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.graphics.scale
 import androidx.fragment.app.activityViewModels
@@ -98,6 +104,8 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
     private lateinit var myGPSAnnotation: PointAnnotation
     private lateinit var pointAnnotationManager: PointAnnotationManager
 
+    private lateinit var fuelData: FuelData
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -150,6 +158,8 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 Log.w("FCM_TOKEN", task.result)
             }
         })
+
+
 
     }
 
@@ -215,6 +225,39 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
 
     override fun onMapClick(point: Point): Boolean {
         return true
+    }
+
+    private fun setupFuelDialog() {
+        binding.fuelTankFrame.setOnClickListener {
+            val dialog = Dialog(requireContext())
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setCancelable(false)
+            dialog.setContentView(R.layout.dialog_fuel)
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            dialog.window?.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
+            val currentFuelLevelString = fuelData.currentFuelLevel.toString() + " L"
+            val tankCapacityString = fuelData.tankCapacity.toString() + " L"
+            val fuelConsumptionString = fuelData.fuelConsumptionPer100km.toString() + " L"
+
+            dialog.findViewById<TextView>(R.id.tvCurrentFuelLevel).text = currentFuelLevelString
+            dialog.findViewById<TextView>(R.id.tvTankCapacity).text = tankCapacityString
+            dialog.findViewById<TextView>(R.id.tvFuelConsumption).text = fuelConsumptionString
+
+            dialog.findViewById<Button>(R.id.btnClose).setOnClickListener {
+                    dialog.dismiss()
+            }
+
+            dialog.findViewById<Button>(R.id.btnRefuel).setOnClickListener {
+                FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("fuelData").child("currentFuelLevel")
+                    .setValue(fuelData.tankCapacity)
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
     }
 
     private fun getRealtimeLocation() {
@@ -292,16 +335,18 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         firebaseRef.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    val data = snapshot.getValue(FuelData::class.java)
+                    fuelData = snapshot.getValue(FuelData::class.java)!!
 
-                    val fuelDataString = String.format(Locale.US, "%.2f", data!!.currentFuelLevel) + "L"
+                    val fuelDataString = String.format(Locale.US, "%.2f", fuelData.currentFuelLevel) + "L"
                     binding.tvCurrentFuelLevel.text = fuelDataString
 
                     val height = binding.fuelTankFrame.height
 
-                    val percentage = data.currentFuelLevel/data.tankCapacity
+                    val percentage = fuelData.currentFuelLevel/fuelData.tankCapacity
                     binding.progressFill.layoutParams.height = (height * percentage).toInt()
                     binding.progressFill.requestLayout()
+
+                    setupFuelDialog()
                 }
             }
 
