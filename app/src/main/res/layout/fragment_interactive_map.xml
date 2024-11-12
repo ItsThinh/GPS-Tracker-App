@@ -139,7 +139,8 @@
         android:layout_marginStart="15dp"
         android:layout_marginBottom="90dp"
         app:strokeWidth="2dp"
-        app:strokeColor="@color/black" >
+        app:strokeColor="@color/black"
+        app:layout_constraintDimensionRatio="1:2">
 
         <!-- Khung hình vuông -->
         <View
@@ -160,6 +161,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0L"
+            android:textSize="14dp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:layout_gravity="center" />

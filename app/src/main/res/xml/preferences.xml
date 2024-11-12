@@ -1,15 +1,40 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditTextPreference
-        app:key="fuel"
-        app:title="Fuel Consumption"
-        app:dialogMessage="Enter the fuel consumption per 100km"
-        app:icon="@drawable/outline_gas_meter_24" />
-    <EditTextPreference
-        app:key="deviceId"
-        app:title="Device ID"
-        app:summary="Enter device ID and start tracking"
-        app:icon="@drawable/baseline_device_hub_24" />
+    <PreferenceCategory
+        app:key="device"
+        app:title="Device">
+        <EditTextPreference
+            app:key="deviceId"
+            app:title="Device ID"
+            app:summary="Enter device ID and start tracking"
+            app:icon="@drawable/baseline_device_hub_24" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="fuel_category"
+        app:title="Fuel" >
+        <EditTextPreference
+            app:key="fuelCurrentLevel"
+            app:title="Current Fuel Level"
+            app:dialogMessage="Enter the current fuel level"
+            app:icon="@drawable/outline_gas_meter_24" />
+        <EditTextPreference
+            app:key="fuelConsumption"
+            app:title="Fuel Consumption"
+            app:dialogMessage="Enter the fuel consumption per 100km"
+            app:icon="@drawable/outline_gas_meter_24" />
+        <EditTextPreference
+            app:key="tankCapacity"
+            app:title="Tank Capacity"
+            app:dialogMessage="Enter the tank capacity"
+            app:icon="@drawable/outline_gas_meter_24" />
+        <EditTextPreference
+            app:key="fuelWarningPercentage"
+            app:title="Fuel Warning Percentage"
+            app:dialogMessage="Enter the warning percentage"
+            app:icon="@drawable/outline_gas_meter_24" />
+    </PreferenceCategory>
+
 
 </PreferenceScreen>

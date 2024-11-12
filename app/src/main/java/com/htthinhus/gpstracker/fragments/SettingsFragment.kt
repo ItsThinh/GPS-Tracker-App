@@ -18,6 +18,7 @@ import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.htthinhus.gpstracker.R
@@ -31,10 +32,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
+    private var DEVICE_ID: String? = null
 
     private lateinit var mySharedPreference: MySharedPreferences
 
-    private lateinit var fuelPreference: EditTextPreference
+    private lateinit var fuelCurrentLevel: EditTextPreference
+    private lateinit var fuelConsumption: EditTextPreference
+    private lateinit var tankCapacity: EditTextPreference
+    private lateinit var fuelWarningPercentage: EditTextPreference
 
     private val auth = Firebase.auth
 
@@ -46,6 +51,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val preferenceScreenView = super.onCreateView(inflater, binding.settingsContainer, savedInstanceState)
         binding.settingsContainer.addView(preferenceScreenView)
+        DEVICE_ID = mySharedPreference.getDeviceId()
         return binding.root
     }
 
@@ -65,8 +71,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         })
 
-        findPreference<EditTextPreference>("fuel")?.summary =
+        findPreference<EditTextPreference>("fuelCurrentLevel")?.summary =
+            "Current value: ${mySharedPreference.getCurrentFuelLevel()} L"
+
+        findPreference<EditTextPreference>("fuelConsumption")?.summary =
             "Current value: ${mySharedPreference.getFuelConsumption100km()} L"
+
+        findPreference<EditTextPreference>("tankCapacity")?.summary =
+            "Current value: ${mySharedPreference.getTankCapacity()} L"
+
+        findPreference<EditTextPreference>("fuelWarningPercentage")?.summary =
+            "Current value: ${mySharedPreference.getWarningFuelPercentage()} %"
 
         binding.btnSignout.setOnClickListener {
             userViewModel.logout()
@@ -97,17 +112,62 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun setUpSettings() {
 
-        findPreference<EditTextPreference>("fuel")
+        findPreference<EditTextPreference>("fuelCurrentLevel")
             ?.setOnPreferenceChangeListener { preference, newValue ->
 
                 val newValueString = newValue.toString().trim()
-                val newFuelValueInt = newValueString.toIntOrNull()
+                val newFuelValueFloat = newValueString.toFloatOrNull()
 
-                if (newFuelValueInt != null) {
-                    fuelPreference.summary = "Current value: $newValueString L"
-                    addFuelToFirestore(newFuelValueInt)
+                if (newFuelValueFloat != null) {
+                    fuelCurrentLevel.summary = "Value: $newValueString L"
+                    addFuelToDatabase(newFuelValueFloat, "currentFuelLevel")
                 } else {
-                    Toast.makeText(context, "Please enter a valid integer number", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Please enter a valid float number", Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
+
+        findPreference<EditTextPreference>("fuelConsumption")
+            ?.setOnPreferenceChangeListener { preference, newValue ->
+
+                val newValueString = newValue.toString().trim()
+                val newFuelValueFloat = newValueString.toFloatOrNull()
+
+                if (newFuelValueFloat != null) {
+                    fuelConsumption.summary = "Value: $newValueString L"
+                    addFuelToDatabase(newFuelValueFloat, "fuelConsumptionPer100km")
+                } else {
+                    Toast.makeText(context, "Please enter a valid float number", Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
+
+        findPreference<EditTextPreference>("tankCapacity")
+            ?.setOnPreferenceChangeListener { preference, newValue ->
+
+                val newValueString = newValue.toString().trim()
+                val newFuelValueFloat = newValueString.toFloatOrNull()
+
+                if (newFuelValueFloat != null) {
+                    tankCapacity.summary = "Value: $newValueString L"
+                    addFuelToDatabase(newFuelValueFloat, "tankCapacity")
+                } else {
+                    Toast.makeText(context, "Please enter a valid float number", Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
+
+        findPreference<EditTextPreference>("fuelWarningPercentage")
+            ?.setOnPreferenceChangeListener { preference, newValue ->
+
+                val newValueString = newValue.toString().trim()
+                val newFuelValueFloat = newValueString.toFloatOrNull()
+
+                if (newFuelValueFloat != null) {
+                    fuelWarningPercentage.summary = "Value: $newValueString L"
+                    addFuelToDatabase(newFuelValueFloat, "warningFuelPercentage")
+                } else {
+                    Toast.makeText(context, "Please enter a valid float number", Toast.LENGTH_SHORT).show()
                 }
                 true
             }
@@ -137,15 +197,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
     }
 
-    private fun addFuelToFirestore(fuelValue: Int) {
-        val fuel = hashMapOf("fuelConsumption100km" to fuelValue)
-        FirebaseFirestore.getInstance()
-            .collection("users")
-            .document(auth.currentUser!!.uid)
-            .set(fuel)
-            .addOnSuccessListener {
-                mySharedPreference.setFuelConsumption100km(fuelValue)
-            }
+    private fun addFuelToDatabase(fuelValue: Float, childString: String) {
+        FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("fuelData").child(childString)
+            .setValue(fuelValue)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -153,10 +207,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         mySharedPreference = MySharedPreferences(requireContext())
 
-        fuelPreference = findPreference("fuel")!!
-        fuelPreference.summary = mySharedPreference.getFuelConsumption100km().toString() + " L"
+        fuelCurrentLevel = findPreference("fuelCurrentLevel")!!
+        fuelConsumption = findPreference("fuelConsumption")!!
+        tankCapacity = findPreference("tankCapacity")!!
+        fuelWarningPercentage = findPreference("fuelWarningPercentage")!!
+
+        fuelCurrentLevel.summary = mySharedPreference.getCurrentFuelLevel().toString() + " L"
+        fuelConsumption.summary = mySharedPreference.getFuelConsumption100km().toString() + " L"
+        tankCapacity.summary = mySharedPreference.getTankCapacity().toString() + " L"
+        fuelWarningPercentage.summary = mySharedPreference.getWarningFuelPercentage().toString() + " %"
     }
-
-
-
 }

@@ -9,16 +9,43 @@ class MySharedPreferences(context: Context) {
         context.getSharedPreferences("MySharedPreferences", Context.MODE_PRIVATE)
 
     private val keyFuelConsumption100km = "fuelConsumption100km"
+    private val keyCurrentFuelLevel = "currentFuelLevel"
+    private val keyTankCapacity = "tankCapacity"
+    private val keyWarningFuelPercentage = "warningFuelPercentage"
     private val keyMapStyle = "mapStyle"
     private val keyDeviceId = "deviceId"
     private val keyToken = "token"
 
-    fun getFuelConsumption100km(): Int {
-        return sharedPreferences.getInt(keyFuelConsumption100km, -1)
+    fun getFuelConsumption100km(): Float {
+        return sharedPreferences.getFloat(keyFuelConsumption100km, 0f)
     }
 
-    fun setFuelConsumption100km(value: Int) {
-        sharedPreferences.edit().putInt(keyFuelConsumption100km, value).apply()
+    fun setFuelConsumption100km(value: Float) {
+        sharedPreferences.edit().putFloat(keyFuelConsumption100km, value).apply()
+    }
+
+    fun getCurrentFuelLevel(): Float {
+        return sharedPreferences.getFloat(keyCurrentFuelLevel, 0f)
+    }
+
+    fun setCurrentFuelLevel(value: Float) {
+        sharedPreferences.edit().putFloat(keyCurrentFuelLevel, value).apply()
+    }
+
+    fun getTankCapacity(): Float {
+        return sharedPreferences.getFloat(keyTankCapacity, 0f)
+    }
+
+    fun setTankCapacity(value: Float) {
+        sharedPreferences.edit().putFloat(keyTankCapacity, value).apply()
+    }
+
+    fun getWarningFuelPercentage(): Float {
+        return sharedPreferences.getFloat(keyWarningFuelPercentage, 0f)
+    }
+
+    fun setWarningFuelPercentage(value: Float) {
+        sharedPreferences.edit().putFloat(keyWarningFuelPercentage, value).apply()
     }
 
     fun getMapStyle(): String {

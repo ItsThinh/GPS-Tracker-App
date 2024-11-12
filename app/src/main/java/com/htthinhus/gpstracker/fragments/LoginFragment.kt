@@ -76,7 +76,7 @@ class LoginFragment : Fragment() {
             if (result) {
                 savedStateHandle[LOGIN_SUCCESSFUL] = true
 
-                getFuel()
+//                getFuel()
 
                 sendTokenToFirestore()
 
@@ -116,24 +116,24 @@ class LoginFragment : Fragment() {
         })
     }
 
-    private fun getFuel() {
-
-        if (auth.currentUser != null) {
-            FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(auth.currentUser!!.uid)
-                .get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()) {
-                        val fuelValue = document.getLong("fuelConsumption100km")
-                        mySharedPreferences.setFuelConsumption100km(fuelValue?.toInt() ?: 0)
-                    }
-                }
-                .addOnFailureListener {
-                    Log.d("LOGIN_FRAGMENT", "Can't get fuel value: $it")
-                }
-        }
-    }
+//    private fun getFuel() {
+//
+//        if (auth.currentUser != null) {
+//            FirebaseFirestore.getInstance()
+//                .collection("users")
+//                .document(auth.currentUser!!.uid)
+//                .get()
+//                .addOnSuccessListener { document ->
+//                    if (document.exists()) {
+//                        val fuelValue = document.getLong("fuelConsumption100km")
+//                        mySharedPreferences.setFuelConsumption100km(fuelValue?.toFloat() ?: 0)
+//                    }
+//                }
+//                .addOnFailureListener {
+//                    Log.d("LOGIN_FRAGMENT", "Can't get fuel value: $it")
+//                }
+//        }
+//    }
 
     private fun sendTokenToFirestore() {
 

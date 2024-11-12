@@ -337,7 +337,7 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 if (snapshot.exists()) {
                     fuelData = snapshot.getValue(FuelData::class.java)!!
 
-                    val fuelDataString = String.format(Locale.US, "%.2f", fuelData.currentFuelLevel) + "L"
+                    val fuelDataString = String.format(Locale.US, "%.1f", fuelData.currentFuelLevel) + "L"
                     binding.tvCurrentFuelLevel.text = fuelDataString
 
                     val height = binding.fuelTankFrame.height
@@ -347,6 +347,11 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                     binding.progressFill.requestLayout()
 
                     setupFuelDialog()
+
+                    mySharedPreferences.setFuelConsumption100km(fuelData.fuelConsumptionPer100km)
+                    mySharedPreferences.setCurrentFuelLevel(fuelData.currentFuelLevel)
+                    mySharedPreferences.setWarningFuelPercentage(fuelData.warningFuelPercentage)
+                    mySharedPreferences.setTankCapacity(fuelData.tankCapacity)
                 }
             }
 
