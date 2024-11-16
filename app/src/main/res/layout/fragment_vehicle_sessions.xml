@@ -24,7 +24,8 @@
         app:cardBackgroundColor="#1B5BFA"
         app:strokeColor="#000000"
         app:strokeWidth="2dp"
-        app:layout_constraintBottom_toBottomOf="parent" >
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"

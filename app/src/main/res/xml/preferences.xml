@@ -18,7 +18,8 @@
             app:key="fuelCurrentLevel"
             app:title="Current Fuel Level"
             app:dialogMessage="Enter the current fuel level"
-            app:icon="@drawable/outline_gas_meter_24" />
+            app:icon="@drawable/outline_gas_meter_24"
+            android:inputType="numberDecimal" />
         <EditTextPreference
             app:key="fuelConsumption"
             app:title="Fuel Consumption"

@@ -364,17 +364,21 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
         val firebaseRef = FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("vehicleState")
         if (vehicleState != null) {
             if (!vehicleState!!.locked){
-                val updates = mapOf<String, Boolean>(
-                    "locked" to !vehicleState!!.locked,
-                    "status" to false
-                )
-                firebaseRef.updateChildren(updates).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.d("UPDATE_LOCKED", "Update successful")
-                    } else {
-                        Log.e("UPDATE_LOCKED", "Update failed", task.exception)
-                    }
-                }
+//                val updates = mapOf<String, Boolean>(
+//                    "locked" to !vehicleState!!.locked,
+//                    "status" to false
+//                )
+//                firebaseRef.updateChildren(updates).addOnCompleteListener { task ->
+//                    if (task.isSuccessful) {
+//                        Log.d("UPDATE_LOCKED", "Update successful")
+//                    } else {
+//                        Log.e("UPDATE_LOCKED", "Update failed", task.exception)
+//                    }
+//                }
+                FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("vehicleState")
+                    .child("locked").setValue(!vehicleState!!.locked)
+                FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("vehicleState")
+                    .child("status").setValue(false)
             } else {
                 FirebaseDatabase.getInstance().getReference(DEVICE_ID!!).child("vehicleState")
                     .child("locked").setValue(!vehicleState!!.locked)

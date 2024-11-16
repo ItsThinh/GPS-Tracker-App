@@ -37,26 +37,40 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         intent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
-        val bitmapLargeIcon: Bitmap
+        var bitmapLargeIcon: Bitmap = BitmapFactory.decodeResource(resources,
+            R.drawable.vehicle_state_off
+        )
         val CHANNEL_ID = "CHANNEL_1"
         var contextTitle = "VEHICLE STATUS"
-        var contentText: String
+        var contentText = ""
         val content:String = message.data["content"]!!
 
-        if (content == "turnOn") {
-            contentText = "VEHICLE IS TURNED ON"
-            bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.vehicle_state_on)
-        } else if (content == "turnOff") {
-            contentText = "VEHICLE IS TURNED OFF"
-            bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.vehicle_state_off)
-        } else if (content == "unauthorizedUnlock") {
-            contextTitle = "WARNING"
-            contentText = "UNAUTHORIZED VEHICLE UNLOCKING"
-            bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.ic_arlet)
-        } else {
-            contextTitle = "WARNING"
-            contentText = "MAIN POWER DISCONNECTED"
-            bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.ic_arlet)
+        when (content) {
+            "turnOn" -> {
+                contentText = "VEHICLE IS TURNED ON"
+                bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.vehicle_state_on)
+            }
+            "turnOff" -> {
+                contentText = "VEHICLE IS TURNED OFF"
+                bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.vehicle_state_off)
+            }
+            "unauthorizedUnlock" -> {
+                contextTitle = "VEHICLE WARNING"
+                contentText = "UNAUTHORIZED VEHICLE UNLOCKING"
+                bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.ic_arlet)
+            }
+            "deviceNotResponse" -> {
+                contextTitle = "DEVICE WARNING"
+                contentText = "DEVICE IS NOT RESPONDING"
+                bitmapLargeIcon = BitmapFactory.decodeResource(resources, R.drawable.ic_arlet)
+            }
+            "fuelWarning" -> {
+                contextTitle = "FUEL WARNING"
+                contentText = "FUEL LEVEL IS BELOW WARNING"
+                bitmapLargeIcon = BitmapFactory.decodeResource(resources,
+                    R.drawable.ic_fuel_warning
+                )
+            }
         }
 
         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
