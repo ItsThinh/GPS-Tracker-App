@@ -68,7 +68,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
                 contextTitle = "FUEL WARNING"
                 contentText = "FUEL LEVEL IS BELOW WARNING"
                 bitmapLargeIcon = BitmapFactory.decodeResource(resources,
-                    R.drawable.ic_fuel_warning
+                    R.drawable.ic_fuel_warning_2
                 )
             }
         }

@@ -250,7 +250,8 @@
                 android:layout_height="wrap_content"
                 android:text="Location details"
                 app:layout_constraintBottom_toTopOf="@+id/btnPlayback"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/btnPlayback"
@@ -261,7 +262,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnLocationDetails" />
+                app:layout_constraintTop_toBottomOf="@+id/btnLocationDetails"
+                android:backgroundTint="#000000"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

@@ -158,9 +158,6 @@ class InteractiveMapFragment : Fragment(), OnMapClickListener {
                 Log.w("FCM_TOKEN", task.result)
             }
         })
-
-
-
     }
 
     private fun setupMap() {
